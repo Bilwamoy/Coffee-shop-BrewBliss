@@ -34,6 +34,8 @@ const Header = () => {
 
   // Check authentication state
   useEffect(() => {
+    if (!auth) return;
+    
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
     });
@@ -60,6 +62,8 @@ const Header = () => {
   ];
 
   const handleSignOut = async () => {
+    if (!auth) return;
+    
     try {
       await signOut(auth);
       setIsUserMenuOpen(false);

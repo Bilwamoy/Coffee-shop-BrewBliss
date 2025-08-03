@@ -13,15 +13,25 @@ export default function RewardsPage() {
   const [nextTierPoints, setNextTierPoints] = useState(100);
 
   useEffect(() => {
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
+    
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
       
-      // In a real implementation, you would fetch loyalty points from Firestore
-      // For now, we'll simulate with random points
+      // Load loyalty points from localStorage or simulate
       if (currentUser) {
-        const points = Math.floor(Math.random() * 300);
+        const savedPoints = localStorage.getItem(`brewbliss_points_${currentUser.uid}`);
+        const points = savedPoints ? parseInt(savedPoints) : Math.floor(Math.random() * 300);
         setLoyaltyPoints(points);
+        
+        // Save points if not already saved
+        if (!savedPoints) {
+          localStorage.setItem(`brewbliss_points_${currentUser.uid}`, points.toString());
+        }
         
         // Determine tier based on points
         if (points < 100) {

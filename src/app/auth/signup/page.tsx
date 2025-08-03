@@ -17,6 +17,11 @@ export default function SignUpPage() {
 
   const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!auth) {
+      setError("Authentication service is not available.");
+      return;
+    }
+    
     setLoading(true);
     setError("");
 
@@ -40,6 +45,11 @@ export default function SignUpPage() {
   };
 
   const handleGoogleSignUp = async () => {
+    if (!auth) {
+      setError("Authentication service is not available.");
+      return;
+    }
+    
     setLoading(true);
     setError("");
 

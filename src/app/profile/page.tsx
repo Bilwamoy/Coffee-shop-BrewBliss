@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { auth, db } from "@/lib/firebase/config";
+import { auth } from "@/lib/firebase/config";
 import { onAuthStateChanged, updateProfile, User } from "firebase/auth";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 interface Order {
   id: string;
@@ -25,29 +24,34 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
+    
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
         setName(currentUser.displayName || "");
         setEmail(currentUser.email || "");
         
-        // Fetch user profile data from Firestore
+        // Load user profile data from localStorage instead of Firestore
         try {
-          const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-            setPhone(userData.phone || "");
-            
-            // Simulate order history
-            const mockOrders: Order[] = [
-              { id: "1", date: "2023-05-15", items: 3, total: 12.50, status: "Delivered" },
-              { id: "2", date: "2023-05-20", items: 2, total: 8.75, status: "Processing" },
-              { id: "3", date: "2023-06-01", items: 1, total: 4.99, status: "Delivered" },
-            ];
-            setOrders(mockOrders);
+          const savedProfile = localStorage.getItem(`brewbliss_profile_${currentUser.uid}`);
+          if (savedProfile) {
+            const profileData = JSON.parse(savedProfile);
+            setPhone(profileData.phone || "");
           }
+          
+          // Simulate order history
+          const mockOrders: Order[] = [
+            { id: "1", date: "2023-05-15", items: 3, total: 12.50, status: "Delivered" },
+            { id: "2", date: "2023-05-20", items: 2, total: 8.75, status: "Processing" },
+            { id: "3", date: "2023-06-01", items: 1, total: 4.99, status: "Delivered" },
+          ];
+          setOrders(mockOrders);
         } catch (error) {
-          console.error("Error fetching user data:", error);
+          console.error("Error loading user data:", error);
         }
       }
       setLoading(false);
@@ -57,12 +61,16 @@ export default function ProfilePage() {
   }, []);
 
   const handleSaveProfile = async () => {
-    if (!user) return;
+    if (!user || !auth) return;
     
     setSaving(true);
     try {
       await updateProfile(user, { displayName: name });
-      await updateDoc(doc(db, "users", user.uid), { phone });
+      
+      // Save profile data to localStorage instead of Firestore
+      const profileData = { phone };
+      localStorage.setItem(`brewbliss_profile_${user.uid}`, JSON.stringify(profileData));
+      
       setEditMode(false);
     } catch (error) {
       console.error("Error updating profile:", error);

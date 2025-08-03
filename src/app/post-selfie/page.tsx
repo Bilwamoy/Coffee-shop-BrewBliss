@@ -15,6 +15,8 @@ export default function PostSelfiePage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
+    if (!auth) return;
+    
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
     });

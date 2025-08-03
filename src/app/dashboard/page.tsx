@@ -24,6 +24,8 @@ export default function DashboardPage() {
   const [following, setFollowing] = useState<string[]>([]); // IDs of users current user is following
 
   useEffect(() => {
+    if (!auth) return;
+    
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
     });
