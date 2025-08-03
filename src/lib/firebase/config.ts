@@ -1,12 +1,16 @@
-// Firebase configuration
-// Import the functions you need from the SDKs you need
-import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
-import { getAuth, Auth } from "firebase/auth";
-import { getFirestore, Firestore } from "firebase/firestore";
-import { getStorage, FirebaseStorage } from "firebase/storage";
+// Firebase configuration with lazy initialization
+import { FirebaseApp } from "firebase/app";
+import { Auth } from "firebase/auth";
+import { Firestore } from "firebase/firestore";
+import { FirebaseStorage } from "firebase/storage";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Global variables to store Firebase instances
+let app: FirebaseApp | null = null;
+let auth: Auth | null = null;
+let db: Firestore | null = null;
+let storage: FirebaseStorage | null = null;
+
+// Firebase configuration
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -17,27 +21,48 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// Check if we're in a browser environment and have the required config
-const isConfigValid = typeof window !== 'undefined' && 
-  firebaseConfig.apiKey && 
-  firebaseConfig.authDomain && 
-  firebaseConfig.projectId;
+// Function to initialize Firebase (only runs in browser)
+const initializeFirebase = async () => {
+  // Skip initialization during build/SSR
+  if (typeof window === 'undefined') {
+    return null;
+  }
 
-let app: FirebaseApp | null = null;
-let auth: Auth | null = null;
-let db: Firestore | null = null;
-let storage: FirebaseStorage | null = null;
+  // Return existing instance if already initialized
+  if (app) {
+    return auth;
+  }
 
-// Only initialize Firebase in browser environment with valid config
-if (isConfigValid) {
   try {
+    // Validate configuration
+    if (!firebaseConfig.apiKey || !firebaseConfig.authDomain || !firebaseConfig.projectId) {
+      console.warn('Firebase configuration is incomplete');
+      return null;
+    }
+
+    // Dynamic imports to prevent loading during build
+    const { initializeApp, getApps, getApp } = await import("firebase/app");
+    const { getAuth } = await import("firebase/auth");
+    const { getFirestore } = await import("firebase/firestore");
+    const { getStorage } = await import("firebase/storage");
+
+    // Initialize Firebase
     app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
     auth = getAuth(app);
     db = getFirestore(app);
     storage = getStorage(app);
+
+    return auth;
   } catch (error) {
     console.error('Firebase initialization error:', error);
+    return null;
   }
-}
+};
 
+// Export function to get auth instance
+export const getAuthInstance = async (): Promise<Auth | null> => {
+  return await initializeFirebase();
+};
+
+// Export other instances (will be null until initialized)
 export { app, auth, db, storage };

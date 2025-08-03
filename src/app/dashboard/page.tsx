@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { auth } from "@/lib/firebase/config";
+import { getAuthInstance } from "@/lib/firebase/config";
 import { onAuthStateChanged, User as FirebaseAuthUser } from "firebase/auth";
 
 interface Post {
@@ -24,12 +24,24 @@ export default function DashboardPage() {
   const [following, setFollowing] = useState<string[]>([]); // IDs of users current user is following
 
   useEffect(() => {
-    if (!auth) return;
+    const initAuth = async () => {
+      const authInstance = await getAuthInstance();
+      if (!authInstance) return;
+      
+      const unsubscribeAuth = onAuthStateChanged(authInstance, (user) => {
+        setCurrentUser(user);
+      });
+      return unsubscribeAuth;
+    };
     
-    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
+    let unsubscribe: (() => void) | undefined;
+    initAuth().then((unsub) => {
+      unsubscribe = unsub;
     });
-    return () => unsubscribeAuth();
+    
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   // Load posts from localStorage

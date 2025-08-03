@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { auth } from "@/lib/firebase/config";
+import { getAuthInstance } from "@/lib/firebase/config";
 import { onAuthStateChanged, updateProfile, User } from "firebase/auth";
 
 interface Order {
@@ -24,44 +24,55 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!auth) {
-      setLoading(false);
-      return;
-    }
-    
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-        setName(currentUser.displayName || "");
-        setEmail(currentUser.email || "");
-        
-        // Load user profile data from localStorage instead of Firestore
-        try {
-          const savedProfile = localStorage.getItem(`brewbliss_profile_${currentUser.uid}`);
-          if (savedProfile) {
-            const profileData = JSON.parse(savedProfile);
-            setPhone(profileData.phone || "");
-          }
-          
-          // Simulate order history
-          const mockOrders: Order[] = [
-            { id: "1", date: "2023-05-15", items: 3, total: 12.50, status: "Delivered" },
-            { id: "2", date: "2023-05-20", items: 2, total: 8.75, status: "Processing" },
-            { id: "3", date: "2023-06-01", items: 1, total: 4.99, status: "Delivered" },
-          ];
-          setOrders(mockOrders);
-        } catch (error) {
-          console.error("Error loading user data:", error);
-        }
+    const initAuth = async () => {
+      const authInstance = await getAuthInstance();
+      if (!authInstance) {
+        setLoading(false);
+        return;
       }
-      setLoading(false);
+      
+      const unsubscribe = onAuthStateChanged(authInstance, async (currentUser) => {
+        if (currentUser) {
+          setUser(currentUser);
+          setName(currentUser.displayName || "");
+          setEmail(currentUser.email || "");
+          
+          // Load user profile data from localStorage instead of Firestore
+          try {
+            const savedProfile = localStorage.getItem(`brewbliss_profile_${currentUser.uid}`);
+            if (savedProfile) {
+              const profileData = JSON.parse(savedProfile);
+              setPhone(profileData.phone || "");
+            }
+            
+            // Simulate order history
+            const mockOrders: Order[] = [
+              { id: "1", date: "2023-05-15", items: 3, total: 12.50, status: "Delivered" },
+              { id: "2", date: "2023-05-20", items: 2, total: 8.75, status: "Processing" },
+              { id: "3", date: "2023-06-01", items: 1, total: 4.99, status: "Delivered" },
+            ];
+            setOrders(mockOrders);
+          } catch (error) {
+            console.error("Error loading user data:", error);
+          }
+        }
+        setLoading(false);
+      });
+      return unsubscribe;
+    };
+    
+    let unsubscribe: (() => void) | undefined;
+    initAuth().then((unsub) => {
+      unsubscribe = unsub;
     });
-
-    return () => unsubscribe();
+    
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   const handleSaveProfile = async () => {
-    if (!user || !auth) return;
+    if (!user) return;
     
     setSaving(true);
     try {

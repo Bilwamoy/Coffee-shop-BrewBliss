@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { auth } from "@/lib/firebase/config";
+import { getAuthInstance } from "@/lib/firebase/config";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/contexts/CartContext";
@@ -34,13 +34,24 @@ const Header = () => {
 
   // Check authentication state
   useEffect(() => {
-    if (!auth) return;
+    const initAuth = async () => {
+      const authInstance = await getAuthInstance();
+      if (!authInstance) return;
+      
+      const unsubscribe = onAuthStateChanged(authInstance, (currentUser) => {
+        setUser(currentUser);
+      });
+      return unsubscribe;
+    };
     
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+    let unsubscribe: (() => void) | undefined;
+    initAuth().then((unsub) => {
+      unsubscribe = unsub;
     });
-
-    return () => unsubscribe();
+    
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
@@ -62,10 +73,11 @@ const Header = () => {
   ];
 
   const handleSignOut = async () => {
-    if (!auth) return;
+    const authInstance = await getAuthInstance();
+    if (!authInstance) return;
     
     try {
-      await signOut(auth);
+      await signOut(authInstance);
       setIsUserMenuOpen(false);
       router.push("/");
       router.refresh();

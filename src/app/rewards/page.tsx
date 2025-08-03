@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { auth } from "@/lib/firebase/config";
+import { getAuthInstance } from "@/lib/firebase/config";
 import { onAuthStateChanged, User } from "firebase/auth";
 
 export default function RewardsPage() {
@@ -13,41 +13,52 @@ export default function RewardsPage() {
   const [nextTierPoints, setNextTierPoints] = useState(100);
 
   useEffect(() => {
-    if (!auth) {
-      setLoading(false);
-      return;
-    }
-    
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-      
-      // Load loyalty points from localStorage or simulate
-      if (currentUser) {
-        const savedPoints = localStorage.getItem(`brewbliss_points_${currentUser.uid}`);
-        const points = savedPoints ? parseInt(savedPoints) : Math.floor(Math.random() * 300);
-        setLoyaltyPoints(points);
-        
-        // Save points if not already saved
-        if (!savedPoints) {
-          localStorage.setItem(`brewbliss_points_${currentUser.uid}`, points.toString());
-        }
-        
-        // Determine tier based on points
-        if (points < 100) {
-          setTier("Silver");
-          setNextTierPoints(100);
-        } else if (points < 250) {
-          setTier("Gold");
-          setNextTierPoints(250);
-        } else {
-          setTier("Platinum");
-          setNextTierPoints(500);
-        }
+    const initAuth = async () => {
+      const authInstance = await getAuthInstance();
+      if (!authInstance) {
+        setLoading(false);
+        return;
       }
+      
+      const unsubscribe = onAuthStateChanged(authInstance, (currentUser) => {
+        setUser(currentUser);
+        setLoading(false);
+        
+        // Load loyalty points from localStorage or simulate
+        if (currentUser) {
+          const savedPoints = localStorage.getItem(`brewbliss_points_${currentUser.uid}`);
+          const points = savedPoints ? parseInt(savedPoints) : Math.floor(Math.random() * 300);
+          setLoyaltyPoints(points);
+          
+          // Save points if not already saved
+          if (!savedPoints) {
+            localStorage.setItem(`brewbliss_points_${currentUser.uid}`, points.toString());
+          }
+          
+          // Determine tier based on points
+          if (points < 100) {
+            setTier("Silver");
+            setNextTierPoints(100);
+          } else if (points < 250) {
+            setTier("Gold");
+            setNextTierPoints(250);
+          } else {
+            setTier("Platinum");
+            setNextTierPoints(500);
+          }
+        }
+      });
+      return unsubscribe;
+    };
+    
+    let unsubscribe: (() => void) | undefined;
+    initAuth().then((unsub) => {
+      unsubscribe = unsub;
     });
-
-    return () => unsubscribe();
+    
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   const progressPercentage = (loyaltyPoints / nextTierPoints) * 100;

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { auth } from "@/lib/firebase/config";
+import { getAuthInstance } from "@/lib/firebase/config";
 import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup, sendEmailVerification } from "firebase/auth";
 import { useRouter } from "next/navigation";
 
@@ -17,7 +17,8 @@ export default function SignUpPage() {
 
   const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!auth) {
+    const authInstance = await getAuthInstance();
+    if (!authInstance) {
       setError("Authentication service is not available.");
       return;
     }
@@ -32,7 +33,7 @@ export default function SignUpPage() {
     }
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(authInstance, email, password);
       await updateProfile(userCredential.user, { displayName: name });
       router.push("/");
       router.refresh();
@@ -45,7 +46,8 @@ export default function SignUpPage() {
   };
 
   const handleGoogleSignUp = async () => {
-    if (!auth) {
+    const authInstance = await getAuthInstance();
+    if (!authInstance) {
       setError("Authentication service is not available.");
       return;
     }
@@ -55,7 +57,7 @@ export default function SignUpPage() {
 
     try {
       const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(authInstance, provider);
       // Update profile with display name if not already set
       if (!result.user.displayName) {
         await updateProfile(result.user, { displayName: result.user.email?.split('@')[0] || 'User' });

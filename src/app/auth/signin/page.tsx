@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { auth } from "@/lib/firebase/config";
+import { getAuthInstance } from "@/lib/firebase/config";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useRouter } from "next/navigation";
 
@@ -15,7 +15,8 @@ export default function SignInPage() {
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!auth) {
+    const authInstance = await getAuthInstance();
+    if (!authInstance) {
       setError("Authentication service is not available.");
       return;
     }
@@ -24,7 +25,7 @@ export default function SignInPage() {
     setError("");
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(authInstance, email, password);
       router.push("/");
       router.refresh();
     } catch (err) {
@@ -36,7 +37,8 @@ export default function SignInPage() {
   };
 
   const handleGoogleSignIn = async () => {
-    if (!auth) {
+    const authInstance = await getAuthInstance();
+    if (!authInstance) {
       setError("Authentication service is not available.");
       return;
     }
@@ -46,7 +48,7 @@ export default function SignInPage() {
 
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      await signInWithPopup(authInstance, provider);
       router.push("/");
       router.refresh();
     } catch (err) {

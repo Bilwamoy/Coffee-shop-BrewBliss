@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { auth } from "@/lib/firebase/config";
+import { getAuthInstance } from "@/lib/firebase/config";
 import { onAuthStateChanged, User } from "firebase/auth";
 
 export default function PostSelfiePage() {
@@ -15,12 +15,24 @@ export default function PostSelfiePage() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
-    if (!auth) return;
+    const initAuth = async () => {
+      const authInstance = await getAuthInstance();
+      if (!authInstance) return;
+      
+      const unsubscribe = onAuthStateChanged(authInstance, (user) => {
+        setCurrentUser(user);
+      });
+      return unsubscribe;
+    };
     
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
+    let unsubscribe: (() => void) | undefined;
+    initAuth().then((unsub) => {
+      unsubscribe = unsub;
     });
-    return () => unsubscribe();
+    
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   const getVideo = () => {
