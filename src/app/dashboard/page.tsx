@@ -4,21 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { db, auth } from "@/lib/firebase/config";
-import {
-  collection,
-  query,
-  orderBy,
-  onSnapshot,
-  doc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-  getDoc,
-  setDoc,
-  deleteDoc,
-  Timestamp,
-} from "firebase/firestore";
+import { auth } from "@/lib/firebase/config";
 import { onAuthStateChanged, User as FirebaseAuthUser } from "firebase/auth";
 
 interface Post {
@@ -29,13 +15,7 @@ interface Post {
   imageUrl: string;
   caption: string;
   likes: string[]; // Array of user IDs who liked the post
-  timestamp: Timestamp; // Firestore Timestamp
-}
-
-interface User {
-  id: string;
-  username: string;
-  avatar: string;
+  timestamp: string; // Changed to string as it will come from API
 }
 
 export default function DashboardPage() {
@@ -50,34 +30,52 @@ export default function DashboardPage() {
     return () => unsubscribeAuth();
   }, []);
 
-  // Fetch posts from Firestore
+  // Fetch posts from API route
   useEffect(() => {
-    const postsCollectionRef = collection(db, "posts");
-    const q = query(postsCollectionRef, orderBy("timestamp", "desc"));
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch('/api/posts');
+        if (response.ok) {
+          const data = await response.json();
+          setPosts(data);
+        } else {
+          console.error("Failed to fetch posts:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
+    };
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const fetchedPosts: Post[] = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as Omit<Post, "id">),
-      }));
-      setPosts(fetchedPosts);
-    });
-
-    return () => unsubscribe();
+    fetchPosts();
+    // You might want to set up polling or websockets for real-time updates
+    // For now, it fetches once on component mount.
   }, []);
 
-  // Fetch following status for current user
+  // Fetch following status for current user (from API route)
   useEffect(() => {
-    if (currentUser) {
-      const followingCollectionRef = collection(db, `users/${currentUser.uid}/following`);
-      const unsubscribe = onSnapshot(followingCollectionRef, (snapshot) => {
-        const followedUsers = snapshot.docs.map(doc => doc.id);
-        setFollowing(followedUsers);
-      });
-      return () => unsubscribe();
-    } else {
-      setFollowing([]);
-    }
+    const fetchFollowing = async () => {
+      if (currentUser) {
+        try {
+          const idToken = await currentUser.getIdToken();
+          const response = await fetch(`/api/users/${currentUser.uid}/follow`, {
+            headers: {
+              'Authorization': `Bearer ${idToken}`
+            }
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setFollowing(data.following || []);
+          } else {
+            console.error("Failed to fetch following status:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Error fetching following status:", error);
+        }
+      } else {
+        setFollowing([]);
+      }
+    };
+    fetchFollowing();
   }, [currentUser]);
 
   const handleLike = async (postId: string) => {
@@ -86,16 +84,38 @@ export default function DashboardPage() {
       return;
     }
 
-    const postRef = doc(db, "posts", postId);
-    const postDoc = await getDoc(postRef);
-
-    if (postDoc.exists()) {
-      const currentLikes = postDoc.data().likes || [];
-      const hasLiked = currentLikes.includes(currentUser.uid);
-
-      await updateDoc(postRef, {
-        likes: hasLiked ? arrayRemove(currentUser.uid) : arrayUnion(currentUser.uid),
+    try {
+      const idToken = await currentUser.getIdToken();
+      const response = await fetch(`/api/posts/${postId}/like`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        },
+        body: JSON.stringify({ userId: currentUser.uid }),
       });
+
+      if (response.ok) {
+        // Optimistically update UI or refetch posts
+        setPosts(prevPosts =>
+          prevPosts.map(post => {
+            if (post.id === postId) {
+              const hasLiked = post.likes.includes(currentUser.uid);
+              return {
+                ...post,
+                likes: hasLiked
+                  ? post.likes.filter(id => id !== currentUser.uid)
+                  : [...post.likes, currentUser.uid],
+              };
+            }
+            return post;
+          })
+        );
+      } else {
+        console.error("Failed to like/unlike post:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error liking/unliking post:", error);
     }
   };
 
@@ -105,13 +125,32 @@ export default function DashboardPage() {
       return;
     }
 
-    const followingRef = doc(db, `users/${currentUser.uid}/following`, userIdToFollow);
-    const isCurrentlyFollowing = following.includes(userIdToFollow);
+    try {
+      const idToken = await currentUser.getIdToken();
+      const isCurrentlyFollowing = following.includes(userIdToFollow);
+      const method = isCurrentlyFollowing ? 'DELETE' : 'POST';
 
-    if (isCurrentlyFollowing) {
-      await deleteDoc(followingRef);
-    } else {
-      await setDoc(followingRef, { followedAt: Timestamp.now() });
+      const response = await fetch(`/api/users/${userIdToFollow}/follow`, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        },
+        body: JSON.stringify({ followerId: currentUser.uid }),
+      });
+
+      if (response.ok) {
+        // Optimistically update UI
+        if (isCurrentlyFollowing) {
+          setFollowing(prev => prev.filter(id => id !== userIdToFollow));
+        } else {
+          setFollowing(prev => [...prev, userIdToFollow]);
+        }
+      } else {
+        console.error("Failed to follow/unfollow user:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error following/unfollowing user:", error);
     }
   };
 
@@ -150,7 +189,7 @@ export default function DashboardPage() {
                   </span>
                 </div>
                 <span className="font-body text-primary-dark/60 text-sm">
-                  {new Date(post.timestamp.toDate()).toLocaleString()}
+                  {new Date(post.timestamp).toLocaleString()}
                 </span>
               </div>
               <div className="relative w-full h-96 bg-gray-200">

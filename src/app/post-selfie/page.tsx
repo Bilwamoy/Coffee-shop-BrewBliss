@@ -2,9 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { db, storage, auth } from "@/lib/firebase/config";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { auth } from "@/lib/firebase/config";
 import { onAuthStateChanged, User } from "firebase/auth";
 
 export default function PostSelfiePage() {
@@ -79,35 +77,37 @@ export default function PostSelfiePage() {
     setMessage(null);
 
     try {
-      console.log("Attempting to convert canvas to blob...");
-      const imageBlob = await new Promise<Blob | null>(resolve => photoRef.current?.toBlob(resolve));
-      if (!imageBlob) {
-        throw new Error("Failed to convert image to blob.");
+      console.log("Attempting to convert canvas to base64...");
+      const base64Image = photoRef.current.toDataURL('image/png'); // Convert to base64
+      if (!base64Image) {
+        throw new Error("Failed to convert image to base64.");
       }
-      console.log("Canvas converted to blob.", imageBlob);
+      console.log("Canvas converted to base64.");
 
-      const storageRef = ref(storage, `posts/${currentUser.uid}/${Date.now()}.png`);
-      console.log("Uploading image to Firebase Storage...");
-      const uploadResult = await uploadBytes(storageRef, imageBlob);
-      const imageUrl = await getDownloadURL(uploadResult.ref);
-      console.log("Image uploaded. Download URL:", imageUrl);
+      const idToken = await currentUser.getIdToken(); // Get Firebase ID token
 
-      console.log("Adding post data to Firestore...");
-      await addDoc(collection(db, "posts"), {
-        userId: currentUser.uid,
-        username: currentUser.displayName || currentUser.email || "Anonymous",
-        userAvatar: currentUser.photoURL || "", // You might want a default avatar here
-        imageUrl: imageUrl,
-        caption: caption,
-        likes: [],
-        timestamp: serverTimestamp(),
+      console.log("Sending post data to API route...");
+      const response = await fetch('/api/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}` // Send ID token for verification
+        },
+        body: JSON.stringify({ base64Image, caption }),
       });
-      console.log("Post data added to Firestore.");
 
-      setMessage({ type: "success", text: "Your selfie has been posted successfully!" });
-      setCaption("");
-      setHasPhoto(false);
-      getVideo(); // Restart video stream after a successful post
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("Post successful:", data);
+        setMessage({ type: "success", text: "Your selfie has been posted successfully!" });
+        setCaption("");
+        setHasPhoto(false);
+        getVideo(); // Restart video stream after a successful post
+      } else {
+        console.error("Error from API route:", data);
+        setMessage({ type: "error", text: `Failed to post selfie: ${data.message || 'Unknown error'}` });
+      }
 
     } catch (error) {
       console.error("Error posting selfie: ", error);
