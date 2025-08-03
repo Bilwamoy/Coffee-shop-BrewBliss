@@ -84,30 +84,38 @@ export default function PostSelfiePage() {
       }
       console.log("Canvas converted to base64.");
 
-      const idToken = await currentUser.getIdToken(); // Get Firebase ID token
+      // Create a new post object
+      const newPost = {
+        id: Date.now().toString(), // Simple ID generation
+        userId: currentUser.uid,
+        username: currentUser.displayName || currentUser.email || "Anonymous",
+        userAvatar: currentUser.photoURL || "",
+        imageUrl: base64Image, // Store the base64 image directly
+        caption: caption,
+        likes: [],
+        timestamp: new Date().toISOString(),
+      };
 
-      console.log("Sending post data to API route...");
-      const response = await fetch('/api/posts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}` // Send ID token for verification
-        },
-        body: JSON.stringify({ base64Image, caption }),
-      });
+      // Get existing posts from localStorage
+      const existingPosts = JSON.parse(localStorage.getItem('brewbliss_posts') || '[]');
+      
+      // Add new post to the beginning of the array
+      const updatedPosts = [newPost, ...existingPosts];
+      
+      // Save back to localStorage
+      localStorage.setItem('brewbliss_posts', JSON.stringify(updatedPosts));
 
-      const data = await response.json();
+      console.log("Post successful!");
+      setMessage({ type: "success", text: "Your selfie has been posted successfully!" });
+      setCaption("");
+      setHasPhoto(false);
+      getVideo(); // Restart video stream after a successful post
 
-      if (response.ok) {
-        console.log("Post successful:", data);
-        setMessage({ type: "success", text: "Your selfie has been posted successfully!" });
-        setCaption("");
-        setHasPhoto(false);
-        getVideo(); // Restart video stream after a successful post
-      } else {
-        console.error("Error from API route:", data);
-        setMessage({ type: "error", text: `Failed to post selfie: ${data.message || 'Unknown error'}` });
-      }
+      // Trigger storage event for other tabs/windows
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'brewbliss_posts',
+        newValue: JSON.stringify(updatedPosts)
+      }));
 
     } catch (error) {
       console.error("Error posting selfie: ", error);

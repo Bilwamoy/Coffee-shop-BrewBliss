@@ -15,7 +15,7 @@ interface Post {
   imageUrl: string;
   caption: string;
   likes: string[]; // Array of user IDs who liked the post
-  timestamp: string; // Changed to string as it will come from API
+  timestamp: string;
 }
 
 export default function DashboardPage() {
@@ -30,125 +30,93 @@ export default function DashboardPage() {
     return () => unsubscribeAuth();
   }, []);
 
-  // Fetch posts from API route
+  // Load posts from localStorage
   useEffect(() => {
-    const fetchPosts = async () => {
+    const loadPosts = () => {
       try {
-        const response = await fetch('/api/posts');
-        if (response.ok) {
-          const data = await response.json();
-          setPosts(data);
-        } else {
-          console.error("Failed to fetch posts:", response.statusText);
+        const savedPosts = localStorage.getItem('brewbliss_posts');
+        if (savedPosts) {
+          const parsedPosts = JSON.parse(savedPosts);
+          setPosts(parsedPosts);
         }
       } catch (error) {
-        console.error("Error fetching posts:", error);
+        console.error("Error loading posts from localStorage:", error);
       }
     };
 
-    fetchPosts();
-    // You might want to set up polling or websockets for real-time updates
-    // For now, it fetches once on component mount.
+    loadPosts();
+    
+    // Listen for storage changes to update posts in real-time
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'brewbliss_posts') {
+        loadPosts();
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
-  // Fetch following status for current user (from API route)
+  // Load following status from localStorage
   useEffect(() => {
-    const fetchFollowing = async () => {
-      if (currentUser) {
-        try {
-          const idToken = await currentUser.getIdToken();
-          const response = await fetch(`/api/users/${currentUser.uid}/follow`, {
-            headers: {
-              'Authorization': `Bearer ${idToken}`
-            }
-          });
-          if (response.ok) {
-            const data = await response.json();
-            setFollowing(data.following || []);
-          } else {
-            console.error("Failed to fetch following status:", response.statusText);
-          }
-        } catch (error) {
-          console.error("Error fetching following status:", error);
+    if (currentUser) {
+      try {
+        const savedFollowing = localStorage.getItem(`brewbliss_following_${currentUser.uid}`);
+        if (savedFollowing) {
+          setFollowing(JSON.parse(savedFollowing));
         }
-      } else {
-        setFollowing([]);
+      } catch (error) {
+        console.error("Error loading following status:", error);
       }
-    };
-    fetchFollowing();
+    } else {
+      setFollowing([]);
+    }
   }, [currentUser]);
 
-  const handleLike = async (postId: string) => {
+  const handleLike = (postId: string) => {
     if (!currentUser) {
       console.log("User not logged in to like posts.");
       return;
     }
 
     try {
-      const idToken = await currentUser.getIdToken();
-      const response = await fetch(`/api/posts/${postId}/like`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
-        },
-        body: JSON.stringify({ userId: currentUser.uid }),
+      setPosts(prevPosts => {
+        const updatedPosts = prevPosts.map(post => {
+          if (post.id === postId) {
+            const hasLiked = post.likes.includes(currentUser.uid);
+            return {
+              ...post,
+              likes: hasLiked
+                ? post.likes.filter(id => id !== currentUser.uid)
+                : [...post.likes, currentUser.uid],
+            };
+          }
+          return post;
+        });
+        
+        // Save to localStorage
+        localStorage.setItem('brewbliss_posts', JSON.stringify(updatedPosts));
+        return updatedPosts;
       });
-
-      if (response.ok) {
-        // Optimistically update UI or refetch posts
-        setPosts(prevPosts =>
-          prevPosts.map(post => {
-            if (post.id === postId) {
-              const hasLiked = post.likes.includes(currentUser.uid);
-              return {
-                ...post,
-                likes: hasLiked
-                  ? post.likes.filter(id => id !== currentUser.uid)
-                  : [...post.likes, currentUser.uid],
-              };
-            }
-            return post;
-          })
-        );
-      } else {
-        console.error("Failed to like/unlike post:", response.statusText);
-      }
     } catch (error) {
       console.error("Error liking/unliking post:", error);
     }
   };
 
-  const handleFollow = async (userIdToFollow: string) => {
+  const handleFollow = (userIdToFollow: string) => {
     if (!currentUser) {
       console.log("User not logged in to follow.");
       return;
     }
 
     try {
-      const idToken = await currentUser.getIdToken();
       const isCurrentlyFollowing = following.includes(userIdToFollow);
-      const method = isCurrentlyFollowing ? 'DELETE' : 'POST';
-
-      const response = await fetch(`/api/users/${userIdToFollow}/follow`, {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`
-        },
-        body: JSON.stringify({ followerId: currentUser.uid }),
-      });
-
-      if (response.ok) {
-        // Optimistically update UI
-        if (isCurrentlyFollowing) {
-          setFollowing(prev => prev.filter(id => id !== userIdToFollow));
-        } else {
-          setFollowing(prev => [...prev, userIdToFollow]);
-        }
-      } else {
-        console.error("Failed to follow/unfollow user:", response.statusText);
-      }
+      const updatedFollowing = isCurrentlyFollowing
+        ? following.filter(id => id !== userIdToFollow)
+        : [...following, userIdToFollow];
+      
+      setFollowing(updatedFollowing);
+      localStorage.setItem(`brewbliss_following_${currentUser.uid}`, JSON.stringify(updatedFollowing));
     } catch (error) {
       console.error("Error following/unfollowing user:", error);
     }
