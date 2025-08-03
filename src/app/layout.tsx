@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Open_Sans } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import { CartProvider } from "@/contexts/CartContext";
-import MobileCartDrawer from "@/components/ui/MobileCartDrawer";
+import App from "@/components/loader"; // Import the App component from loader.tsx
 
 // Configure fonts according to design requirements
 // Modern serif for headings, clean sans-serif for body
@@ -35,14 +32,7 @@ export default function RootLayout({
       <body
         className={`${playfairDisplay.variable} ${openSans.variable} font-body bg-background text-foreground min-h-screen flex flex-col`}
       >
-        <CartProvider>
-          <Header />
-          <main className="flex-grow">
-            {children}
-          </main>
-          <Footer />
-          <MobileCartDrawer />
-        </CartProvider>
+        <App>{children}</App>
       </body>
     </html>
   );

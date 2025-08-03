@@ -6,17 +6,16 @@ import { useCart } from "@/contexts/CartContext";
 import Image from "next/image";
 import Link from "next/link";
 
+import { useRouter } from "next/navigation";
+
 export default function CartPage() {
   const { items, totalItems, totalAmount, updateQuantity, removeFromCart } = useCart();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const router = useRouter();
 
   const handleCheckout = () => {
     setIsCheckingOut(true);
-    // In a real implementation, this would redirect to a checkout page or open a modal
-    setTimeout(() => {
-      alert("Proceeding to checkout!");
-      setIsCheckingOut(false);
-    }, 1000);
+    router.push("/checkout");
   };
 
   if (items.length === 0) {

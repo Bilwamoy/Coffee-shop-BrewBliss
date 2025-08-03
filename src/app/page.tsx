@@ -1,84 +1,33 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import Image from "next/image";
+import Carousel from "@/components/carousel";
 
 export default function Home() {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) {
-    return null;
-  }
-
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section with Animated Background */}
-      <motion.section
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.5 }}
-        className="relative h-screen flex items-center justify-center overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-primary-dark bg-opacity-70 z-0"></div>
-        <motion.div
-          animate={{
-            scale: [1, 1.1, 1],
-            rotate: [0, 0.5, 0],
-          }}
-          transition={{
-            duration: 20,
-            ease: "easeInOut",
-            times: [0, 0.5, 1],
-            repeat: Infinity,
-          }}
-          className="absolute inset-0 z-0"
-        >
-          <Image
-            src="/hero-coffee.jpg"
-            alt="Coffee beans background"
-            fill
-            style={{ objectFit: "cover" }}
-            className="opacity-30"
-          />
-        </motion.div>
+      {/* Hero Section with Carousel */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        <Carousel />
+      </section>
 
-        <div className="relative z-10 text-center px-4 max-w-4xl">
-          <motion.h1
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.5, duration: 1 }}
-            className="font-heading text-5xl md:text-7xl lg:text-8xl text-secondary-light mb-6"
-          >
-            Brew & Bliss
-          </motion.h1>
-          <motion.p
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 1, duration: 1 }}
-            className="font-body text-xl md:text-2xl text-secondary-light mb-10 max-w-2xl mx-auto"
-          >
-            Experience the perfect blend of premium coffee and serene ambiance
-          </motion.p>
-          <motion.div
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 1.5, duration: 1 }}
-            className="flex flex-col sm:flex-row justify-center gap-4"
-          >
-            <button className="font-body bg-accent text-primary-dark px-8 py-4 rounded-full text-lg font-semibold hover:bg-secondary-dark transition-colors duration-300">
-              Order Now
-            </button>
-            <button className="font-body border-2 border-secondary-light text-secondary-light px-8 py-4 rounded-full text-lg font-semibold hover:bg-secondary-light hover:text-primary-dark transition-colors duration-300">
-              View Menu
-            </button>
-          </motion.div>
+      {/* Video Section */}
+      <section className="py-12 px-4 bg-primary-dark text-secondary-light text-center">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="font-heading text-3xl md:text-4xl mb-8">Experience Brew & Bliss</h2>
+          <div className="relative w-full" style={{ paddingBottom: '56.25%' /* 16:9 Aspect Ratio */ }}>
+            <video
+              src="/videos/promo.mp4"
+              controls
+              loop
+              muted
+              className="absolute top-0 left-0 w-full h-full rounded-lg shadow-xl"
+            >
+              Your browser does not support the video tag.
+            </video>
+          </div>
         </div>
-      </motion.section>
+      </section>
 
       {/* Features Section */}
       <section className="py-20 px-4 max-w-6xl mx-auto">

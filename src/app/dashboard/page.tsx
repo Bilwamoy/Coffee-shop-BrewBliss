@@ -1,0 +1,197 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
+import { db, auth } from "@/lib/firebase/config";
+import {
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+  doc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  getDoc,
+  setDoc,
+  deleteDoc,
+  Timestamp,
+} from "firebase/firestore";
+import { onAuthStateChanged, User as FirebaseAuthUser } from "firebase/auth";
+
+interface Post {
+  id: string;
+  userId: string;
+  username: string;
+  userAvatar: string;
+  imageUrl: string;
+  caption: string;
+  likes: string[]; // Array of user IDs who liked the post
+  timestamp: Timestamp; // Firestore Timestamp
+}
+
+interface User {
+  id: string;
+  username: string;
+  avatar: string;
+}
+
+export default function DashboardPage() {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [currentUser, setCurrentUser] = useState<FirebaseAuthUser | null>(null);
+  const [following, setFollowing] = useState<string[]>([]); // IDs of users current user is following
+
+  useEffect(() => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+    return () => unsubscribeAuth();
+  }, []);
+
+  // Fetch posts from Firestore
+  useEffect(() => {
+    const postsCollectionRef = collection(db, "posts");
+    const q = query(postsCollectionRef, orderBy("timestamp", "desc"));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedPosts: Post[] = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as Omit<Post, "id">),
+      }));
+      setPosts(fetchedPosts);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Fetch following status for current user
+  useEffect(() => {
+    if (currentUser) {
+      const followingCollectionRef = collection(db, `users/${currentUser.uid}/following`);
+      const unsubscribe = onSnapshot(followingCollectionRef, (snapshot) => {
+        const followedUsers = snapshot.docs.map(doc => doc.id);
+        setFollowing(followedUsers);
+      });
+      return () => unsubscribe();
+    } else {
+      setFollowing([]);
+    }
+  }, [currentUser]);
+
+  const handleLike = async (postId: string) => {
+    if (!currentUser) {
+      console.log("User not logged in to like posts.");
+      return;
+    }
+
+    const postRef = doc(db, "posts", postId);
+    const postDoc = await getDoc(postRef);
+
+    if (postDoc.exists()) {
+      const currentLikes = postDoc.data().likes || [];
+      const hasLiked = currentLikes.includes(currentUser.uid);
+
+      await updateDoc(postRef, {
+        likes: hasLiked ? arrayRemove(currentUser.uid) : arrayUnion(currentUser.uid),
+      });
+    }
+  };
+
+  const handleFollow = async (userIdToFollow: string) => {
+    if (!currentUser) {
+      console.log("User not logged in to follow.");
+      return;
+    }
+
+    const followingRef = doc(db, `users/${currentUser.uid}/following`, userIdToFollow);
+    const isCurrentlyFollowing = following.includes(userIdToFollow);
+
+    if (isCurrentlyFollowing) {
+      await deleteDoc(followingRef);
+    } else {
+      await setDoc(followingRef, { followedAt: Timestamp.now() });
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto">
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="font-heading text-4xl md:text-5xl text-primary-dark mb-8 text-center"
+        >
+          Community Moments
+        </motion.h1>
+
+        <div className="space-y-8">
+          {posts.map(post => (
+            <motion.div
+              key={post.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="bg-secondary-light rounded-lg shadow-lg overflow-hidden"
+            >
+              <div className="p-4 flex items-center justify-between">
+                <div className="flex items-center">
+                  <Image
+                    src={post.userAvatar || "/images/default-avatar.png"} // Fallback avatar
+                    alt={post.username}
+                    width={40}
+                    height={40}
+                    className="rounded-full mr-3 object-cover"
+                  />
+                  <span className="font-body text-primary-dark font-semibold">
+                    {post.username}
+                  </span>
+                </div>
+                <span className="font-body text-primary-dark/60 text-sm">
+                  {new Date(post.timestamp.toDate()).toLocaleString()}
+                </span>
+              </div>
+              <div className="relative w-full h-96 bg-gray-200">
+                <Image
+                  src={post.imageUrl}
+                  alt={post.caption}
+                  fill
+                  style={{ objectFit: "cover" }}
+                />
+              </div>
+              <div className="p-4">
+                <p className="font-body text-primary-dark mb-3">
+                  {post.caption}
+                </p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <button
+                      onClick={() => handleLike(post.id)}
+                      className={`flex items-center font-body text-primary-dark ${post.likes.includes(currentUser?.uid || "") ? "text-red-500" : "hover:text-red-500"}`}
+                    >
+                      <svg className="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                      {post.likes.length} Likes
+                    </button>
+                    <Link href={`/dashboard/${post.id}`} className="font-body text-primary-dark hover:text-accent">
+                      View Comments (Simulated)
+                    </Link>
+                  </div>
+                  {currentUser && post.userId !== currentUser.uid && (
+                    <button
+                      onClick={() => handleFollow(post.userId)}
+                      className={`font-body px-3 py-1 rounded-full text-sm ${following.includes(post.userId) ? "bg-gray-300 text-gray-700" : "bg-accent text-primary-dark hover:bg-primary-dark hover:text-secondary-light"}`}
+                    >
+                      {following.includes(post.userId) ? "Following" : "Follow"}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

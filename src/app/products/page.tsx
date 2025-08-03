@@ -1,60 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import ProductCard from "@/components/ui/ProductCard";
-import { db } from "@/lib/firebase/config";
-import { collection, getDocs, query } from "firebase/firestore";
-
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  images: string[];
-  availability: boolean;
-  customizations: any[];
-}
+import { menuData, getMenuCategories, getMenuItemsByCategory, MenuItem } from "@/lib/menuData";
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const productsQuery = query(collection(db, "products"));
-        const productsSnapshot = await getDocs(productsQuery);
-        
-        const productsList = productsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Product[];
-        
-        setProducts(productsList);
-        setLoading(false);
-        
-        // Extract unique categories
-        const uniqueCategories = Array.from(
-          new Set(productsList.map(product => product.category))
-        );
-        setCategories(uniqueCategories);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        setLoading(false);
-      }
-    };
+  const categories = getMenuCategories();
 
-    fetchProducts();
-  }, []);
-
-  // Filter products by category
   const filteredProducts = selectedCategory
-    ? products.filter(product => product.category === selectedCategory)
-    : products;
+    ? getMenuItemsByCategory(selectedCategory)
+    : menuData;
 
   return (
     <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
@@ -102,28 +60,14 @@ export default function ProductsPage() {
         </motion.div>
 
         {/* Products Grid */}
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[...Array(6)].map((_, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
-                className="bg-secondary-light rounded-lg shadow-lg h-64 animate-pulse"
-              />
-            ))}
-          </div>
-        ) : (
-          <motion.div
-            layout
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
-          >
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </motion.div>
-        )}
+        <motion.div
+          layout
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
+          {filteredProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </motion.div>
       </div>
     </div>
   );

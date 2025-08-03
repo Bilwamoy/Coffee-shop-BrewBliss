@@ -2,9 +2,30 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useState } from "react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      setMessage({ type: "error", text: "Please enter your email address." });
+      return;
+    }
+
+    // Simulate sending email to admin
+    console.log(`Admin Notification: New newsletter subscription from: ${email}`);
+    setMessage({ type: "success", text: "Thank you for subscribing!" });
+    setEmail(""); // Clear the input
+
+    // Optionally clear message after some time
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
+  };
 
   const footerLinks = [
     {
@@ -58,14 +79,13 @@ const Footer = () => {
             >
               <span className="text-2xl">📘</span>
             </motion.a>
-            <motion.a
-              whileHover={{ y: -3 }}
-              href="#"
+            <Link
+              href="/post-selfie"
               className="text-secondary-light hover:text-accent"
-              aria-label="Instagram"
+              aria-label="Post a Selfie"
             >
-              <span className="text-2xl">📷</span>
-            </motion.a>
+              <motion.span whileHover={{ y: -3 }} className="text-2xl">📷</motion.span>
+            </Link>
             <motion.a
               whileHover={{ y: -3 }}
               href="#"
@@ -119,11 +139,13 @@ const Footer = () => {
           <p className="font-body mb-4">
             Stay updated with our latest offers and products.
           </p>
-          <form className="flex flex-col space-y-3">
+          <form className="flex flex-col space-y-3" onSubmit={handleSubscribe}>
             <input
               type="email"
               placeholder="Your email"
               className="px-4 py-2 rounded-lg bg-secondary-light text-primary-dark focus:outline-none focus:ring-2 focus:ring-accent"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -133,6 +155,11 @@ const Footer = () => {
             >
               Subscribe
             </motion.button>
+            {message && (
+              <p className={`font-body text-sm ${message.type === "error" ? "text-red-500" : "text-green-500"}`}>
+                {message.text}
+              </p>
+            )}
           </form>
         </motion.div>
       </div>
