@@ -8,7 +8,7 @@ import CoffeeDivider from "@/components/CoffeeDivider";
 import LiquidPourDivider from "@/components/animations/LiquidPourDivider";
 import CoffeeCupFill from "@/components/animations/CoffeeCupFill";
 import SteamDissolveTransition from "@/components/animations/SteamDissolveTransition";
-import { Typewriter, WordReveal } from "@/components/animations/ClientSideAnimations";
+import SafeTypewriter, { SafeWordReveal } from "@/components/animations/SafeTypewriter";
 
 // Dynamically import ScrollTrigger to avoid SSR issues
 let ScrollTrigger: any;
@@ -121,11 +121,10 @@ export default function Home() {
               {/* Video Content */}
               <div className="lg:col-span-2">
                 <div className="mb-8">
-                  <Typewriter 
-                    text="Experience Brew & Bliss"
-                    speed={80}
-                    className="font-heading text-4xl md:text-5xl text-coffee-dark"
-                  />
+                  <p className="font-heading text-4xl md:text-5xl text-coffee-dark font-sans">
+                    Experience Brew & Bliss
+                    
+                  </p>
                 </div>
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -163,13 +162,12 @@ export default function Home() {
               className="text-center mb-16"
             >
               <div className="mb-6">
-                <Typewriter 
-                  text="Our Coffee Philosophy"
-                  speed={60}
-                  className="font-heading text-4xl md:text-5xl text-coffee-dark"
-                />
+                <p className="font-heading text-4xl md:text-5xl text-coffee-dark"> 
+                  Our Coffee Philosophy
+                  
+                </p>
               </div>
-              <WordReveal 
+              <SafeWordReveal 
                 text="Every cup tells a story of passion, precision, and the pursuit of perfection"
                 animationType="coffee-drop"
                 delay={3}
