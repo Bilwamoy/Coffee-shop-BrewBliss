@@ -56,8 +56,8 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-primary-dark text-secondary-light py-12 px-6">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer className="section-dark-brown coffee-drip text-cream py-16 px-6 relative overflow-hidden">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 relative z-10">
         {/* Brand Info */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -66,33 +66,33 @@ const Footer = () => {
           transition={{ duration: 0.5 }}
           className="md:col-span-1"
         >
-          <h2 className="font-heading text-2xl font-bold mb-4">Brew & Bliss</h2>
-          <p className="font-body mb-6">
-            Experience the perfect blend of premium coffee and serene ambiance.
+          <h2 className="font-heading text-3xl font-bold mb-6 text-accent">Brew & Bliss</h2>
+          <p className="font-body mb-8 text-beige-warm leading-relaxed">
+            Experience the perfect blend of premium coffee and serene ambiance in our artisanal sanctuary.
           </p>
-          <div className="flex space-x-4">
+          <div className="flex space-x-6">
             <motion.a
-              whileHover={{ y: -3 }}
+              whileHover={{ y: -5, scale: 1.1 }}
               href="#"
-              className="text-secondary-light hover:text-accent"
+              className="text-cream hover:text-accent transition-colors duration-300"
               aria-label="Facebook"
             >
-              <span className="text-2xl">📘</span>
+              <span className="text-3xl">📘</span>
             </motion.a>
             <Link
               href="/post-selfie"
-              className="text-secondary-light hover:text-accent"
+              className="text-cream hover:text-accent transition-colors duration-300"
               aria-label="Post a Selfie"
             >
-              <motion.span whileHover={{ y: -3 }} className="text-2xl">📷</motion.span>
+              <motion.span whileHover={{ y: -5, scale: 1.1 }} className="text-3xl">📷</motion.span>
             </Link>
             <motion.a
-              whileHover={{ y: -3 }}
+              whileHover={{ y: -5, scale: 1.1 }}
               href="#"
-              className="text-secondary-light hover:text-accent"
+              className="text-cream hover:text-accent transition-colors duration-300"
               aria-label="Twitter"
             >
-              <span className="text-2xl">🐦</span>
+              <span className="text-3xl">🐦</span>
             </motion.a>
           </div>
         </motion.div>
@@ -107,15 +107,15 @@ const Footer = () => {
             transition={{ duration: 0.5, delay: index * 0.1 }}
             className="md:col-span-1"
           >
-            <h3 className="font-heading text-xl font-semibold mb-4">
+            <h3 className="font-heading text-xl font-semibold mb-6 text-accent">
               {column.title}
             </h3>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {column.links.map((link, linkIndex) => (
                 <li key={linkIndex}>
                   <Link
                     href={link.path}
-                    className="font-body text-lg hover:text-accent transition-colors duration-300"
+                    className="font-body text-lg text-beige-warm hover:text-accent transition-colors duration-300 hover:translate-x-2 inline-block"
                   >
                     {link.name}
                   </Link>
@@ -133,32 +133,36 @@ const Footer = () => {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="md:col-span-1"
         >
-          <h3 className="font-heading text-xl font-semibold mb-4">
+          <h3 className="font-heading text-xl font-semibold mb-6 text-accent">
             Join Our Newsletter
           </h3>
-          <p className="font-body mb-4">
-            Stay updated with our latest offers and products.
+          <p className="font-body mb-6 text-beige-warm leading-relaxed">
+            Stay updated with our latest blends, exclusive offers, and coffee stories.
           </p>
-          <form className="flex flex-col space-y-3" onSubmit={handleSubscribe}>
+          <form className="flex flex-col space-y-4" onSubmit={handleSubscribe}>
             <input
               type="email"
-              placeholder="Your email"
-              className="px-4 py-2 rounded-lg bg-secondary-light text-primary-dark focus:outline-none focus:ring-2 focus:ring-accent"
+              placeholder="Your email address"
+              className="px-5 py-3 rounded-xl bg-cream text-coffee-dark focus:outline-none focus:ring-2 focus:ring-accent shadow-lg transition-all duration-300"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <motion.button
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               type="submit"
-              className="font-body bg-accent text-primary-dark px-4 py-2 rounded-lg font-semibold hover:bg-secondary-dark transition-colors duration-300"
+              className="font-body bg-gradient-to-r from-accent to-accent-dark text-coffee-dark px-5 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              Subscribe
+              Subscribe to Bliss
             </motion.button>
             {message && (
-              <p className={`font-body text-sm ${message.type === "error" ? "text-red-500" : "text-green-500"}`}>
+              <motion.p 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`font-body text-sm ${message.type === "error" ? "text-red-400" : "text-green-400"}`}
+              >
                 {message.text}
-              </p>
+              </motion.p>
             )}
           </form>
         </motion.div>
@@ -170,10 +174,10 @@ const Footer = () => {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay: 0.4 }}
-        className="max-w-6xl mx-auto mt-12 pt-6 border-t border-secondary-light/30 text-center"
+        className="max-w-6xl mx-auto mt-16 pt-8 border-t border-cream/20 text-center"
       >
-        <p className="font-body">
-          &copy; {currentYear} Brew & Bliss Coffee. All rights reserved.
+        <p className="font-body text-beige-warm text-lg">
+          &copy; {currentYear} Brew & Bliss Coffee. Crafted with ❤️ for coffee lovers worldwide.
         </p>
       </motion.div>
     </footer>

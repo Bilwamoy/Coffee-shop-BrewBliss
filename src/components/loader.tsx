@@ -15,6 +15,11 @@ import Footer from "@/components/layout/Footer";
 import { CartProvider } from "@/contexts/CartContext";
 import MobileCartDrawer from "@/components/ui/MobileCartDrawer";
 import AudioPlayer from "@/components/AudioPlayer";
+import PageTransition from "@/components/animations/PageTransition";
+import ScrollAnimations from "@/components/animations/ScrollAnimations";
+import AnimationPreloader from "@/components/animations/AnimationPreloader";
+import CoffeeBeansLoader from "@/components/animations/CoffeeBeansLoader";
+import { useProgressiveEnhancement } from "@/hooks/usePerformanceOptimization";
 
 // A placeholder for your actual website content.
 // In a real app, this would be your main router or page component.
@@ -22,7 +27,11 @@ const MainWebsite = ({ children }: { children: React.ReactNode }) => (
   <CartProvider>
     <Header />
     <main className="flex-grow">
-      {children}
+      <PageTransition>
+        <ScrollAnimations>
+          {children}
+        </ScrollAnimations>
+      </PageTransition>
     </main>
     <Footer />
     <MobileCartDrawer />
@@ -190,6 +199,8 @@ const DynamicBrandFeature: React.FC<DynamicBrandFeatureProps> = ({ onAnimationCo
 const App = ({ children }: { children: React.ReactNode }) => {
   // State to control whether the landing page or main site is shown
   const [isLoading, setIsLoading] = useState(true);
+  const [beansLoading, setBeansLoading] = useState(false);
+  const [animationsReady, setAnimationsReady] = useState(false);
 
   // Effect to load Google Fonts dynamically
   useEffect(() => {
@@ -206,10 +217,27 @@ const App = ({ children }: { children: React.ReactNode }) => {
         // Show the landing page and pass the function to update the state
         <DynamicBrandFeature
           key="loader"
-          onAnimationComplete={() => setIsLoading(false)}
+          onAnimationComplete={() => {
+            setIsLoading(false);
+            setBeansLoading(true);
+          }}
+        />
+      ) : beansLoading ? (
+        // Show coffee beans falling animation
+        <CoffeeBeansLoader
+          key="beans-loader"
+          onComplete={() => {
+            setBeansLoading(false);
+          }}
+        />
+      ) : !animationsReady ? (
+        // Show animation preloader after main loader
+        <AnimationPreloader
+          key="animation-preloader"
+          onComplete={() => setAnimationsReady(true)}
         />
       ) : (
-        // Once loading is false, show the main website
+        // Once everything is ready, show the main website
         <MainWebsite key="main-site">{children}</MainWebsite>
       )}
     </AnimatePresence>

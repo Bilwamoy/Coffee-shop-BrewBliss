@@ -87,7 +87,7 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-primary-dark text-secondary-light py-4 px-6 shadow-md">
+    <header className="glass-morphism sticky top-0 z-50 text-cream py-4 px-6 shadow-lg backdrop-blur-md">
       <div className="max-w-6xl mx-auto flex justify-between items-center">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
