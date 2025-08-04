@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Open_Sans } from "next/font/google";
+import { Cinzel_Decorative, Open_Sans } from "next/font/google";
 import "./globals.css";
 import App from "@/components/loader"; // Import the App component from loader.tsx
+import { ClientProviders } from "@/contexts/ClientProviders";
+import GlobalClientComponents from "@/components/layout/GlobalClientComponents";
 
 // Configure fonts according to design requirements
 // Modern serif for headings, clean sans-serif for body
-const playfairDisplay = Playfair_Display({
+const cinzelDecorative = Cinzel_Decorative({
   subsets: ["latin"],
   variable: "--font-heading",
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "700", "900"],
 });
 
 const openSans = Open_Sans({
@@ -30,9 +32,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${playfairDisplay.variable} ${openSans.variable} font-body bg-background text-foreground min-h-screen flex flex-col`}
+        className={`${cinzelDecorative.variable} ${openSans.variable} font-body bg-background text-foreground min-h-screen flex flex-col`}
       >
-        <App>{children}</App>
+        <ClientProviders>
+          <App>{children}</App>
+        </ClientProviders>
+        <GlobalClientComponents />
       </body>
     </html>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { gsap } from 'gsap';
 import { useOptimizedAnimations } from '@/hooks/usePerformanceOptimization';
 
@@ -23,29 +23,36 @@ export const TypewriterText: React.FC<TypewriterTextProps> = ({
   const [displayText, setDisplayText] = useState('');
   const [showCursorState, setShowCursorState] = useState(true);
   const { shouldAnimate, config } = useOptimizedAnimations();
+  const ref = useRef(null);
+  const isInView = useInView(ref, { amount: 0.5 });
 
   useEffect(() => {
-    if (!shouldAnimate) {
-      setDisplayText(text);
-      onComplete?.();
-      return;
+    let typeInterval: NodeJS.Timeout | undefined;
+
+    if (shouldAnimate && isInView) {
+      setDisplayText(''); // Start fresh for animation
+      let index = 0;
+      const adjustedSpeed = speed / (config.animationQuality === 'low' ? 2 : 1);
+      
+      typeInterval = setInterval(() => {
+        if (index < text.length) {
+          setDisplayText(text.slice(0, index + 1));
+          index++;
+        } else {
+          clearInterval(typeInterval);
+          onComplete?.();
+        }
+      }, adjustedSpeed);
+    } else {
+      setDisplayText(text); // Show full text if not animating or not in view
     }
 
-    let index = 0;
-    const adjustedSpeed = speed / (config.animationQuality === 'low' ? 2 : 1);
-    
-    const typeInterval = setInterval(() => {
-      if (index < text.length) {
-        setDisplayText(text.slice(0, index + 1));
-        index++;
-      } else {
+    return () => {
+      if (typeInterval) {
         clearInterval(typeInterval);
-        onComplete?.();
       }
-    }, adjustedSpeed);
-
-    return () => clearInterval(typeInterval);
-  }, [text, speed, shouldAnimate, config]);
+    };
+  }, [text, speed, shouldAnimate, config, isInView, onComplete]);
 
   useEffect(() => {
     if (!showCursor) return;
@@ -58,12 +65,16 @@ export const TypewriterText: React.FC<TypewriterTextProps> = ({
   }, [showCursor]);
 
   return (
-    <span className={className}>
+    <span ref={ref} className={className}>
       {displayText}
       {showCursor && (
-        <span className={`inline-block w-0.5 h-1em bg-current ml-1 ${showCursorState ? 'opacity-100' : 'opacity-0'} transition-opacity`}>
+        <motion.span
+          animate={{ opacity: [0, 1, 0] }}
+          transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+          className="inline-block w-0.5 h-1em bg-current ml-1"
+        >
           |
-        </span>
+        </motion.span>
       )}
     </span>
   );

@@ -174,7 +174,7 @@ export default function Home() {
                 animationType="coffee-drop"
                 delay={3}
                 staggerDelay={0.15}
-                className="font-body text-xl text-coffee-warm max-w-3xl mx-auto"
+                className="font-body text-xl text-coffee-dark max-w-3xl mx-auto"
               />
             </motion.div>
 
@@ -186,7 +186,7 @@ export default function Home() {
                   transition: { duration: 0.3, ease: "easeOut" }
                 }}
               >
-                <div className="bg-gradient-to-br from-coffee-warm to-coffee-light text-cream w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
+                <div className="bg-gradient-to-br from-coffee-warm to-coffee-light text-coffee-dark w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
                   <span className="text-3xl">☕</span>
                 </div>
                 <h3 className="font-heading text-2xl mb-6 text-coffee-dark">
@@ -204,7 +204,7 @@ export default function Home() {
                   transition: { duration: 0.3, ease: "easeOut" }
                 }}
               >
-                <div className="bg-gradient-to-br from-coffee-warm to-coffee-light text-cream w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
+                <div className="bg-gradient-to-br from-coffee-warm to-coffee-light text-coffee-dark w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
                   <span className="text-3xl">🎨</span>
                 </div>
                 <h3 className="font-heading text-2xl mb-6 text-coffee-dark">
@@ -222,7 +222,7 @@ export default function Home() {
                   transition: { duration: 0.3, ease: "easeOut" }
                 }}
               >
-                <div className="bg-gradient-to-br from-coffee-warm to-coffee-light text-cream w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
+                <div className="bg-gradient-to-br from-coffee-warm to-coffee-light text-coffee-dark w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
                   <span className="text-3xl">🌿</span>
                 </div>
                 <h3 className="font-heading text-2xl mb-6 text-coffee-dark">

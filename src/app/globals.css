@@ -356,11 +356,13 @@ body::before {
 .section-warm-beige {
   background: linear-gradient(135deg, var(--coffee-warm) 0%, var(--warm-beige) 100%);
   transition: background 1s ease-in-out;
+  color: var(--coffee-dark);
 }
 
 .section-cream {
   background: linear-gradient(135deg, var(--warm-beige) 0%, var(--cream) 100%);
   transition: background 1s ease-in-out;
+  color: var(--coffee-dark);
 }
 
 /* Luxury Hover Effects */
