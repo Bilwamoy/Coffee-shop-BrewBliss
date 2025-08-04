@@ -181,7 +181,7 @@ export default function ParallaxRoastingProcess({ className = '' }: ParallaxRoas
         {/* Roasting Process Flow */}
         <div className="relative">
           {/* Connection Line */}
-          <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-green-400 via-orange-400 via-red-400 to-brown-600 opacity-30 transform -translate-y-1/2 z-0"></div>
+          <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-green-400 via-orange-400 to-brown-600 opacity-30 transform -translate-y-1/2 z-0"></div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
             {roastingStages.map((stage, index) => (
@@ -258,7 +258,12 @@ export default function ParallaxRoastingProcess({ className = '' }: ParallaxRoas
             <h3 className="font-heading text-2xl text-cream mb-4">Temperature Timeline</h3>
             <div className="flex items-center justify-center space-x-4">
               <span className="text-green-400 font-semibold">Room Temp</span>
-              <div className="flex-1 h-2 bg-gradient-to-r from-green-400 via-yellow-400 via-orange-400 via-red-400 to-brown-600 rounded-full max-w-xs"></div>
+              <div 
+                className="flex-1 h-2 rounded-full max-w-xs"
+                style={{
+                  background: 'linear-gradient(to right, rgb(74, 222, 128), rgb(250, 204, 21), rgb(251, 146, 60), rgb(239, 68, 68), rgb(146, 64, 14))'
+                }}
+              ></div>
               <span className="text-brown-400 font-semibold">435°F</span>
             </div>
             <p className="font-body text-beige-warm text-sm mt-4">
