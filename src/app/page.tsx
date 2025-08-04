@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-import Carousel from "@/components/carousel";
+import EnhancedCarousel from "@/components/EnhancedCarousel";
 import PremiumBackground from "@/components/PremiumBackground";
 import CoffeeDivider from "@/components/CoffeeDivider";
 import LiquidPourDivider from "@/components/animations/LiquidPourDivider";
@@ -98,10 +98,10 @@ export default function Home() {
   return (
     <PremiumBackground>
       <div className="min-h-screen">
-        {/* Hero Section with Carousel */}
+        {/* Hero Section with Enhanced Carousel */}
         <section className="relative h-screen flex items-center justify-center overflow-hidden parallax-container">
           <div className="parallax-layer">
-            <Carousel />
+            <EnhancedCarousel />
           </div>
         </section>
 

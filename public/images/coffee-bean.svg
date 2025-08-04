@@ -1,0 +1,18 @@
+<svg width="24" height="32" viewBox="0 0 24 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="coffeeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B4513;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#A0522D;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#654321;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Coffee bean shape -->
+  <ellipse cx="12" cy="16" rx="10" ry="14" fill="url(#coffeeGradient)" />
+  
+  <!-- Coffee bean crack/line -->
+  <path d="M12 4 Q8 16 12 28 Q16 16 12 4" fill="none" stroke="#4a2c2a" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Highlight -->
+  <ellipse cx="8" cy="10" rx="2" ry="3" fill="rgba(255,255,255,0.2)" />
+</svg>

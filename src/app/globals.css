@@ -398,6 +398,332 @@ body::before {
   box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
 }
 
+/* Enhanced Carousel 3D Effects */
+.carousel-3d {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.carousel-slide {
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+/* Smooth Hardware Acceleration */
+.carousel-3d,
+.carousel-slide,
+.carousel-content {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Enhanced Glass Morphism for Carousel */
+.carousel-glass {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 8px 32px 0 rgba(31, 38, 135, 0.37),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Carousel Progress Animation */
+@keyframes carousel-progress {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+.carousel-progress {
+  animation: carousel-progress 7s linear infinite;
+}
+
+/* Enhanced Hover Effects for Carousel Controls */
+.carousel-control {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(8px);
+}
+
+.carousel-control:hover {
+  backdrop-filter: blur(16px);
+  transform: scale(1.1);
+}
+
+/* Carousel Indicator Animations */
+.carousel-indicator {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.carousel-indicator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.6s ease;
+}
+
+.carousel-indicator:hover::before {
+  left: 100%;
+}
+
+/* Text Shadow Enhancements */
+.carousel-title {
+  text-shadow: 
+    2px 2px 8px rgba(0, 0, 0, 0.7),
+    0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.carousel-subtitle {
+  text-shadow: 
+    1px 1px 4px rgba(0, 0, 0, 0.7),
+    0 0 15px rgba(0, 0, 0, 0.4);
+}
+
+/* Mobile Optimizations for Enhanced Carousel */
+@media (max-width: 768px) {
+  .carousel-3d {
+    perspective: 800px;
+  }
+  
+  .carousel-control {
+    backdrop-filter: blur(6px);
+  }
+  
+  .carousel-glass {
+    backdrop-filter: blur(8px);
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .carousel-3d,
+  .carousel-slide,
+  .carousel-content {
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+  
+  .carousel-progress {
+    animation: none;
+  }
+}
+
+/* Enhanced Checkout & Cart 3D Effects */
+.checkout-card-3d {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.cart-item-3d {
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+/* Payment Card 3D Animation */
+.payment-card {
+  transform-style: preserve-3d;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.payment-card:hover {
+  transform: rotateY(5deg) rotateX(5deg);
+}
+
+/* Delivery Tracking Animations */
+.delivery-truck {
+  animation: truckBounce 2s ease-in-out infinite;
+}
+
+@keyframes truckBounce {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+.delivery-progress-line {
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    var(--accent) 50%, 
+    transparent 100%);
+  background-size: 200% 100%;
+  animation: progressShimmer 2s linear infinite;
+}
+
+@keyframes progressShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Enhanced Glass Morphism for Checkout */
+.checkout-glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px 0 rgba(31, 38, 135, 0.37),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* Cart Item Hover Effects */
+.cart-item {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.cart-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.1), 
+    transparent);
+  transition: left 0.6s ease;
+}
+
+.cart-item:hover::before {
+  left: 100%;
+}
+
+/* Quantity Button Animations */
+.quantity-btn {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.quantity-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+.quantity-btn:active::after {
+  width: 100px;
+  height: 100px;
+}
+
+/* Checkout Step Indicators */
+.step-indicator {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.step-indicator.active {
+  animation: stepPulse 2s ease-in-out infinite;
+}
+
+@keyframes stepPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.step-indicator::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.step-indicator.active::after {
+  transform: translate(-50%, -50%) scale(1.2);
+  opacity: 0.3;
+  animation: ripple 2s ease-in-out infinite;
+}
+
+@keyframes ripple {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+  100% { transform: translate(-50%, -50%) scale(1.4); opacity: 0; }
+}
+
+/* Form Input Enhancements */
+.enhanced-input {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.enhanced-input:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.enhanced-input.error {
+  animation: inputShake 0.5s ease-in-out;
+}
+
+@keyframes inputShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* Loading Spinner Enhancement */
+.enhanced-spinner {
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid var(--accent);
+  border-radius: 50%;
+  animation: enhancedSpin 1s linear infinite;
+}
+
+@keyframes enhancedSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Success Checkmark Animation */
+.success-checkmark {
+  animation: checkmarkDraw 0.6s ease-in-out;
+}
+
+@keyframes checkmarkDraw {
+  0% { stroke-dasharray: 0 100; }
+  100% { stroke-dasharray: 100 0; }
+}
+
+/* Mobile Optimizations for Enhanced Components */
+@media (max-width: 768px) {
+  .checkout-card-3d,
+  .cart-item-3d {
+    perspective: 800px;
+  }
+  
+  .payment-card:hover {
+    transform: none;
+  }
+  
+  .cart-item::before {
+    display: none;
+  }
+  
+  .enhanced-input:focus {
+    transform: none;
+  }
+}
+
 .timeline-marker {
   box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
 }

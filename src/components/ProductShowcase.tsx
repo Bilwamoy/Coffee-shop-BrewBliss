@@ -129,7 +129,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
               {/* Product Image */}
               <div className="relative h-64 overflow-hidden">
                 <Image
-                  src={product.images[0] || '/images/placeholder-coffee.jpg'}
+                  src={product.images[0] || '/images/placeholder-coffee.svg'}
                   alt={product.name}
                   fill
                   className="product-image object-cover transition-transform duration-700"

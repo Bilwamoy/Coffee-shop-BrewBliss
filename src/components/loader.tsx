@@ -35,7 +35,7 @@ const MainWebsite = ({ children }: { children: React.ReactNode }) => (
     </main>
     <Footer />
     <MobileCartDrawer />
-    <AudioPlayer src="/music/background_music.mp3" />
+    <AudioPlayer src="/music/Morning in a Cup.mp3" />
   </CartProvider>
 );
 

@@ -160,7 +160,7 @@ export default function DashboardPage() {
               <div className="p-4 flex items-center justify-between">
                 <div className="flex items-center">
                   <Image
-                    src={post.userAvatar || "/images/default-avatar.png"} // Fallback avatar
+                    src={post.userAvatar || "/images/default-avatar.svg"} // Fallback avatar
                     alt={post.username}
                     width={40}
                     height={40}

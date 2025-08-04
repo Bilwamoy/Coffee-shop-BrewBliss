@@ -1,0 +1,26 @@
+<svg width="60" height="80" viewBox="0 0 60 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="steamGradient" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:rgba(255,255,255,0.8);stop-opacity:1" />
+      <stop offset="50%" style="stop-color:rgba(255,255,255,0.4);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgba(255,255,255,0.1);stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Steam wisps -->
+  <path d="M15 70 Q10 60 15 50 Q20 40 15 30 Q10 20 15 10 Q20 5 15 0" 
+        fill="none" stroke="url(#steamGradient)" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+  
+  <path d="M30 70 Q35 60 30 50 Q25 40 30 30 Q35 20 30 10 Q25 5 30 0" 
+        fill="none" stroke="url(#steamGradient)" stroke-width="4" stroke-linecap="round" opacity="0.8"/>
+  
+  <path d="M45 70 Q40 60 45 50 Q50 40 45 30 Q40 20 45 10 Q50 5 45 0" 
+        fill="none" stroke="url(#steamGradient)" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+  
+  <!-- Additional smaller wisps for detail -->
+  <path d="M22 65 Q18 55 22 45 Q26 35 22 25 Q18 15 22 8" 
+        fill="none" stroke="url(#steamGradient)" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+  
+  <path d="M38 65 Q42 55 38 45 Q34 35 38 25 Q42 15 38 8" 
+        fill="none" stroke="url(#steamGradient)" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+</svg>
