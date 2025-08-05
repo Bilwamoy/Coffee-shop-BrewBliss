@@ -1,10 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize Resend inside the function to avoid build-time issues
+const getResendClient = () => {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error('RESEND_API_KEY environment variable is not configured');
+  }
+  return new Resend(process.env.RESEND_API_KEY);
+};
 
 export async function POST(request: NextRequest) {
   try {
+    // Initialize Resend client
+    let resend;
+    try {
+      resend = getResendClient();
+    } catch (error) {
+      console.error('Resend initialization error:', error);
+      return NextResponse.json(
+        { error: 'Email service is not configured. Please contact the administrator.' },
+        { status: 500 }
+      );
+    }
+
     const { name, email, subject, message, type = 'general' } = await request.json();
 
     if (!name || !email || !subject || !message) {
@@ -102,7 +120,7 @@ export async function POST(request: NextRequest) {
               <a href="mailto:${email}" style="background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%); color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center;">
                 <span style="margin-right: 8px;">📧</span> Reply to Customer
               </a>
-              <a href="${process.env.NEXT_PUBLIC_BASE_URL}/admin" style="background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%); color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center;">
+              <a href="${process.env.NEXT_PUBLIC_BASE_URL || '#'}/admin" style="background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%); color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center;">
                 <span style="margin-right: 8px;">⚙️</span> Admin Panel
               </a>
             </div>
@@ -174,7 +192,7 @@ export async function POST(request: NextRequest) {
           </p>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${process.env.NEXT_PUBLIC_BASE_URL}" style="background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 10px; font-weight: 600; display: inline-block;">
+            <a href="${process.env.NEXT_PUBLIC_BASE_URL || '#'}" style="background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 10px; font-weight: 600; display: inline-block;">
               Visit Our Website
             </a>
           </div>
@@ -187,12 +205,18 @@ export async function POST(request: NextRequest) {
       </div>
     `;
 
-    await resend.emails.send({
-      from: 'Brew & Bliss <onboarding@resend.dev>',
-      to: [email],
-      subject: 'Thank you for contacting Brew & Bliss!',
-      html: confirmationContent,
-    });
+    // Send confirmation email with error handling
+    try {
+      await resend.emails.send({
+        from: 'Brew & Bliss <onboarding@resend.dev>',
+        to: [email],
+        subject: 'Thank you for contacting Brew & Bliss!',
+        html: confirmationContent,
+      });
+    } catch (confirmationError) {
+      console.error('Failed to send confirmation email:', confirmationError);
+      // Don't fail the entire request if confirmation email fails
+    }
 
     return NextResponse.json(
       { 
