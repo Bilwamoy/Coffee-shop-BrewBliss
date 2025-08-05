@@ -87,8 +87,8 @@ const Header = () => {
   };
 
   return (
-    <header className="glass-morphism sticky top-0 z-50 text-cream py-4 px-6 shadow-2xl backdrop-blur-md border-b border-cream/10">
-      <div className="max-w-6xl mx-auto flex justify-between items-center">
+    <header className="glass-morphism sticky top-0 z-50 text-cream py-3 px-4 sm:py-4 sm:px-6 shadow-2xl backdrop-blur-md border-b border-cream/10 min-h-[70px] flex items-center">
+      <div className="max-w-6xl mx-auto w-full flex justify-between items-center relative">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -194,26 +194,27 @@ const Header = () => {
             </>
           )}
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - Highly Visible */}
           <motion.button
-            whileHover={{ scale: 1.1 }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="md:hidden text-accent focus:outline-none p-2 rounded-full hover:bg-cream/10 transition-all duration-300"
+            className="md:hidden text-cream focus:outline-none p-3 hover:bg-cream/20 rounded-lg transition-all duration-200 bg-accent/10 border border-accent/30"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle mobile menu"
           >
-            <div className="w-6 h-6 flex flex-col justify-between">
+            <div className="w-6 h-6 flex flex-col justify-center space-y-1.5">
               <span
-                className={`block h-0.5 bg-accent transition-all duration-300 ${
+                className={`block h-1 w-6 bg-cream shadow-sm transition-all duration-300 ${
                   isMenuOpen ? "rotate-45 translate-y-2.5" : ""
                 }`}
               ></span>
               <span
-                className={`block h-0.5 bg-accent transition-all duration-300 ${
+                className={`block h-1 w-6 bg-cream shadow-sm transition-all duration-300 ${
                   isMenuOpen ? "opacity-0" : ""
                 }`}
               ></span>
               <span
-                className={`block h-0.5 bg-accent transition-all duration-300 ${
+                className={`block h-1 w-6 bg-cream shadow-sm transition-all duration-300 ${
                   isMenuOpen ? "-rotate-45 -translate-y-2.5" : ""
                 }`}
               ></span>
@@ -221,29 +222,30 @@ const Header = () => {
           </motion.button>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Navigation - Standard & Elegant */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.nav
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="absolute top-20 left-0 right-0 bg-white/95 backdrop-blur-md md:hidden z-50 shadow-2xl border-t border-cream/20"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="absolute top-full left-0 right-0 bg-coffee-dark/95 backdrop-blur-md md:hidden z-50 shadow-xl border-t border-cream/10"
             >
-              <div className="flex flex-col py-6 px-6 space-y-2">
+              <div className="flex flex-col py-4 px-0 space-y-0">
                 {navItems.map((item, index) => (
                   <motion.div
                     key={item.name}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
+                    transition={{ delay: index * 0.05 }}
                   >
                     <Link
                       href={item.path}
-                      className={`font-body text-lg py-3 px-4 rounded-xl relative flex items-center transition-all duration-300 ${
+                      className={`font-body text-base py-4 px-6 flex items-center transition-all duration-200 border-b border-cream/10 last:border-b-0 ${
                         pathname === item.path
-                          ? "text-coffee-dark bg-accent shadow-lg"
-                          : "text-coffee-medium hover:text-coffee-dark hover:bg-accent/10"
+                          ? "text-accent bg-accent/10 border-l-4 border-l-accent"
+                          : "text-cream hover:text-accent hover:bg-cream/5"
                       }`}
                       onClick={() => setIsMenuOpen(false)}
                     >
@@ -257,15 +259,15 @@ const Header = () => {
                   </motion.div>
                 ))}
                 
-                {/* Mobile Auth Buttons */}
+                {/* Mobile Auth Buttons - Standard & Elegant */}
                 {!user && (
-                  <div className="pt-4 border-t border-cream/20 space-y-3">
+                  <div className="pt-4 border-t border-cream/10 space-y-3 px-6">
                     <motion.button
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: navItems.length * 0.1 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="font-body w-full border-2 border-accent text-accent px-4 py-3 rounded-xl text-sm font-semibold hover:bg-accent hover:text-coffee-dark transition-all duration-300"
+                      transition={{ delay: navItems.length * 0.05 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="font-body w-full border border-accent text-accent px-4 py-3 rounded-lg text-sm font-medium hover:bg-accent hover:text-coffee-dark transition-all duration-200"
                       onClick={() => {
                         setIsMenuOpen(false);
                         router.push("/auth/signin");
@@ -276,9 +278,9 @@ const Header = () => {
                     <motion.button
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: (navItems.length + 1) * 0.1 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="font-body w-full bg-gradient-to-r from-accent to-accent-dark text-coffee-dark px-4 py-3 rounded-xl text-sm font-semibold shadow-lg transition-all duration-300"
+                      transition={{ delay: (navItems.length + 1) * 0.05 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="font-body w-full bg-accent text-coffee-dark px-4 py-3 rounded-lg text-sm font-medium hover:bg-accent-dark transition-all duration-200"
                       onClick={() => {
                         setIsMenuOpen(false);
                         router.push("/auth/signup");

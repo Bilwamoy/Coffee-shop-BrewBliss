@@ -12,19 +12,17 @@ interface DynamicBrandFeatureProps {
 
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { CartProvider } from "@/contexts/CartContext";
 import MobileCartDrawer from "@/components/ui/MobileCartDrawer";
 import AudioPlayer from "@/components/AudioPlayer";
 import PageTransition from "@/components/animations/PageTransition";
 import ScrollAnimations from "@/components/animations/ScrollAnimations";
 import AnimationPreloader from "@/components/animations/AnimationPreloader";
 import CoffeeBeansLoader from "@/components/animations/CoffeeBeansLoader";
-import { useProgressiveEnhancement } from "@/hooks/usePerformanceOptimization";
 
 // A placeholder for your actual website content.
 // In a real app, this would be your main router or page component.
 const MainWebsite = ({ children }: { children: React.ReactNode }) => (
-  <CartProvider>
+  <>
     <Header />
     <main className="flex-grow">
       <PageTransition>
@@ -36,7 +34,7 @@ const MainWebsite = ({ children }: { children: React.ReactNode }) => (
     <Footer />
     <MobileCartDrawer />
     <AudioPlayer src="/music/Morning in a Cup.mp3" />
-  </CartProvider>
+  </>
 );
 
 
