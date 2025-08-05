@@ -32,12 +32,6 @@ const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
             y: 0,
             scale: 1,
             filter: 'blur(0px)',
-            transition: {
-              type: "spring",
-              damping: 12,
-              stiffness: 200,
-              duration: 0.8,
-            },
           },
         };
 
@@ -46,20 +40,14 @@ const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
           hidden: {
             opacity: 0,
             x: -100,
-            rotation: -180,
+            rotate: -180,
             scale: 0.5,
           },
           visible: {
             opacity: 1,
             x: 0,
-            rotation: 0,
+            rotate: 0,
             scale: 1,
-            transition: {
-              type: "spring",
-              damping: 15,
-              stiffness: 150,
-              duration: 1,
-            },
           },
         };
 
@@ -76,11 +64,6 @@ const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
             y: 0,
             scale: 1,
             filter: 'blur(0px)',
-            transition: {
-              type: "tween",
-              ease: [0.25, 0.46, 0.45, 0.94],
-              duration: 0.8,
-            },
           },
         };
 
@@ -99,12 +82,6 @@ const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
             y: 0,
             scale: 1,
             skewX: 0,
-            transition: {
-              type: "spring",
-              damping: 20,
-              stiffness: 300,
-              duration: 0.6,
-            },
           },
         };
 
@@ -168,10 +145,10 @@ const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
           {/* Add coffee bean decoration for beans animation */}
           {animationType === 'beans' && (
             <motion.div
-              initial={{ opacity: 0, rotation: 0 }}
+              initial={{ opacity: 0, rotate: 0 }}
               animate={{ 
                 opacity: [0, 0.6, 0],
-                rotation: 360,
+                rotate: 360,
                 scale: [0.5, 1, 0.5]
               }}
               transition={{

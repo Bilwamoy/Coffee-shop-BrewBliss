@@ -31,8 +31,8 @@ const AnimatedCard: React.FC<AnimatedCardProps> = ({
       switch (animationType) {
         case 'flip':
           gsap.to(card, {
-            rotationY: 10,
-            rotationX: 5,
+            rotateY: 10,
+            rotateX: 5,
             scale: 1.05,
             duration: 0.6,
             ease: "power2.out",
@@ -94,7 +94,7 @@ const AnimatedCard: React.FC<AnimatedCardProps> = ({
         case 'splash':
           gsap.to(card, {
             scale: 1.08,
-            rotation: 2,
+            rotate: 2,
             duration: 0.3,
             ease: "back.out(1.7)",
           });
@@ -131,9 +131,9 @@ const AnimatedCard: React.FC<AnimatedCardProps> = ({
       gsap.to(card, {
         y: 0,
         scale: 1,
-        rotation: 0,
-        rotationY: 0,
-        rotationX: 0,
+        rotate: 0,
+        rotateY: 0,
+        rotateX: 0,
         filter: 'brightness(1) saturate(1)',
         duration: 0.4,
         ease: "power2.out",
@@ -163,19 +163,14 @@ const AnimatedCard: React.FC<AnimatedCardProps> = ({
     hidden: {
       opacity: 0,
       y: animationType === 'flip' ? 0 : 50,
-      rotationY: animationType === 'flip' ? -90 : 0,
+      rotateY: animationType === 'flip' ? -90 : 0,
       scale: 0.8,
     },
     visible: {
       opacity: 1,
       y: 0,
-      rotationY: 0,
+      rotateY: 0,
       scale: 1,
-      transition: {
-        duration: 0.8,
-        delay: delay,
-        ease: [0.25, 0.46, 0.45, 0.94],
-      },
     },
   };
 
@@ -186,6 +181,11 @@ const AnimatedCard: React.FC<AnimatedCardProps> = ({
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-50px" }}
+      transition={{
+        duration: 0.8,
+        delay: delay,
+        ease: "easeOut",
+      }}
       className={`relative ${className}`}
       style={{ 
         transformStyle: 'preserve-3d',

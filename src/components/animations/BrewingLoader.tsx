@@ -193,12 +193,12 @@ const BrewingLoader: React.FC<BrewingLoaderProps> = ({
                 x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1200),
                 y: typeof window !== 'undefined' ? window.innerHeight + 50 : 800,
                 opacity: 0,
-                rotation: 0,
+                rotate: 0,
               }}
               animate={{
                 y: -50,
                 opacity: [0, 0.6, 0],
-                rotation: 360,
+                rotate: 360,
                 scale: [0.5, 1, 1.5],
               }}
               transition={{

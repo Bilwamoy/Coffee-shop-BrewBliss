@@ -4,6 +4,8 @@ export interface MenuItem {
   name: string;
   description: string;
   imageUrl: string;
+  category?: string;
+  price?: number;
 }
 
 export const menuData: MenuItem[] = [

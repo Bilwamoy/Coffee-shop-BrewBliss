@@ -240,12 +240,12 @@ const BrewingSubmission: React.FC<BrewingSubmissionProps> = ({
                           x: Math.random() * 300,
                           y: 400,
                           opacity: 0,
-                          rotation: 0,
+                          rotate: 0,
                         }}
                         animate={{
                           y: -50,
                           opacity: [0, 0.6, 0],
-                          rotation: 360,
+                          rotate: 360,
                           scale: [0.5, 1, 1.5],
                         }}
                         transition={{

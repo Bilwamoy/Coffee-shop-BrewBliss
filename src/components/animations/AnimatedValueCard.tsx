@@ -23,24 +23,33 @@ export default function AnimatedValueCard({ value, index, className = '' }: Anim
       case 'bounce':
         return {
           y: [0, -10, 0],
-          transition: { duration: 2, repeat: Infinity, delay: index * 0.2 }
         };
       case 'grow':
         return {
           scale: [1, 1.1, 1],
-          transition: { duration: 2, repeat: Infinity, delay: index * 0.2 }
         };
       case 'pulse':
         return {
           scale: [1, 1.05, 1],
           opacity: [1, 0.8, 1],
-          transition: { duration: 2, repeat: Infinity, delay: index * 0.2 }
         };
       case 'rotate':
         return {
           rotate: [0, 360],
-          transition: { duration: 4, repeat: Infinity, ease: "linear", delay: index * 0.2 }
         };
+      default:
+        return {};
+    }
+  };
+
+  const getIconTransition = () => {
+    switch (value.animation) {
+      case 'bounce':
+      case 'grow':
+      case 'pulse':
+        return { duration: 2, repeat: Infinity, delay: index * 0.2 };
+      case 'rotate':
+        return { duration: 4, repeat: Infinity, delay: index * 0.2 };
       default:
         return {};
     }
@@ -78,7 +87,7 @@ export default function AnimatedValueCard({ value, index, className = '' }: Anim
           className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-accent to-accent-dark rounded-full flex items-center justify-center shadow-lg relative z-10"
           animate={getIconAnimation()}
           whileHover={getHoverAnimation()}
-          transition={{ duration: 0.6 }}
+          transition={getIconTransition()}
         >
           <span className="text-3xl">{value.icon}</span>
           

@@ -32,7 +32,7 @@ export const TypewriterText: React.FC<TypewriterTextProps> = ({
     if (shouldAnimate && isInView) {
       setDisplayText(''); // Start fresh for animation
       let index = 0;
-      const adjustedSpeed = speed / (config.animationQuality === 'low' ? 2 : 1);
+      const adjustedSpeed = speed;
       
       typeInterval = setInterval(() => {
         if (index < text.length) {
@@ -146,7 +146,7 @@ export const WordReveal: React.FC<WordRevealProps> = ({
           transition={{
             duration: config.duration * 0.5,
             delay: delay + index * adjustedStaggerDelay,
-            ease: animationType === 'bounce' ? "back.out(1.7)" : "easeOut"
+            ease: animationType === 'bounce' ? "backOut" : "easeOut"
           }}
           className="inline-block mr-1"
         >
@@ -225,7 +225,7 @@ export const LetterReveal: React.FC<LetterRevealProps> = ({
           transition={{
             duration: config.duration * 0.3,
             delay: delay + index * adjustedStaggerDelay,
-            ease: animationType === 'spiral' ? "back.out(1.7)" : "easeOut"
+            ease: animationType === 'spiral' ? [0.68, -0.55, 0.265, 1.55] : [0, 0, 0.2, 1]
           }}
           className="inline-block"
         >

@@ -24,9 +24,9 @@ export default function SafeTypewriter({
   const [hasStarted, setHasStarted] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const elementRef = useRef<HTMLSpanElement>(null);
-  const timeoutRef = useRef<NodeJS.Timeout>();
-  const intervalRef = useRef<NodeJS.Timeout>();
-  const observerRef = useRef<IntersectionObserver>();
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   // Ensure we're on the client side
   useEffect(() => {

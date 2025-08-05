@@ -37,7 +37,7 @@ export default function AboutPage() {
       title: "The Seed of an Idea",
       description: "Our founders discovered exceptional coffee beans during a trip to Colombia, inspiring the vision for Brew & Bliss.",
       icon: "🌱",
-      side: "left",
+      side: "left" as const,
       details: "A life-changing journey through Colombian coffee farms sparked our passion for exceptional coffee."
     },
     {
@@ -45,7 +45,7 @@ export default function AboutPage() {
       title: "First Roastery",
       description: "We established our first small-batch roastery, focusing on sustainable sourcing and artisanal roasting techniques.",
       icon: "🏭",
-      side: "right",
+      side: "right" as const,
       details: "Our first roastery in downtown, where every bean is carefully crafted to perfection."
     },
     {
@@ -53,7 +53,7 @@ export default function AboutPage() {
       title: "Community Roots",
       description: "Despite challenges, we opened our first café, creating a warm community space for coffee lovers.",
       icon: "🏠",
-      side: "left",
+      side: "left" as const,
       details: "Building connections one cup at a time, even during the most challenging times."
     },
     {
@@ -61,7 +61,7 @@ export default function AboutPage() {
       title: "Direct Trade Partnerships",
       description: "We formed direct relationships with coffee farmers, ensuring fair prices and sustainable practices.",
       icon: "🤝",
-      side: "right",
+      side: "right" as const,
       details: "Partnering directly with farmers to ensure quality, sustainability, and fair compensation."
     },
     {
@@ -69,7 +69,7 @@ export default function AboutPage() {
       title: "Award Recognition",
       description: "Our commitment to quality earned us the 'Best Local Coffee Roaster' award from the Coffee Association.",
       icon: "🏆",
-      side: "left",
+      side: "left" as const,
       details: "Recognition for our dedication to quality and community impact."
     },
     {
@@ -77,7 +77,7 @@ export default function AboutPage() {
       title: "Expansion & Innovation",
       description: "We expanded to multiple locations while introducing innovative brewing methods and specialty drinks.",
       icon: "🚀",
-      side: "right",
+      side: "right" as const,
       details: "Growing our family of coffee lovers across the city with innovative experiences."
     },
     {
@@ -85,7 +85,7 @@ export default function AboutPage() {
       title: "Digital Experience",
       description: "Launched our premium digital platform, bringing the Brew & Bliss experience to coffee lovers everywhere.",
       icon: "💻",
-      side: "left",
+      side: "left" as const,
       details: "Connecting coffee lovers worldwide through our digital platform and premium experiences."
     }
   ];
@@ -136,28 +136,28 @@ export default function AboutPage() {
       title: "Quality First",
       description: "Every bean is carefully selected and roasted to perfection, ensuring exceptional taste in every cup.",
       icon: "☕",
-      animation: "bounce",
+      animation: "bounce" as const,
       color: "from-amber-400 to-orange-500"
     },
     {
       title: "Sustainability",
       description: "We're committed to ethical sourcing and environmental responsibility throughout our supply chain.",
       icon: "🌱",
-      animation: "grow",
+      animation: "grow" as const,
       color: "from-green-400 to-emerald-500"
     },
     {
       title: "Community",
       description: "Building connections and creating spaces where people come together over great coffee.",
       icon: "🤝",
-      animation: "pulse",
+      animation: "pulse" as const,
       color: "from-blue-400 to-cyan-500"
     },
     {
       title: "Innovation",
       description: "Constantly exploring new brewing methods and flavors to enhance your coffee experience.",
       icon: "🚀",
-      animation: "rotate",
+      animation: "rotate" as const,
       color: "from-purple-400 to-pink-500"
     }
   ];

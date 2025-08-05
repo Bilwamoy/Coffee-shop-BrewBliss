@@ -284,7 +284,7 @@ export const useAnimations = (options: UseAnimationsOptions = {}) => {
 };
 
 // Hook for scroll-triggered animations
-export const useScrollAnimations = (containerRef: React.RefObject<HTMLElement>) => {
+export const useScrollAnimations = (containerRef: React.RefObject<HTMLElement | HTMLDivElement | null>) => {
   const animations = useAnimations();
 
   useEffect(() => {
