@@ -150,7 +150,7 @@ export default function PostSelfiePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-primary-light via-secondary-light to-cream py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto text-center">
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
@@ -161,11 +161,11 @@ export default function PostSelfiePage() {
           Share Your Coffee Moment!
         </motion.h1>
 
-        <p className="font-body text-primary-dark/80 mb-8">
+        <p className="font-body text-primary mb-8">
           Take a selfie with your favorite Brew & Bliss coffee and share it with our community.
         </p>
 
-        <div className="bg-secondary-light rounded-lg shadow-lg p-6 mb-8">
+        <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-6 mb-8">
           <div className="relative w-full max-w-md mx-auto aspect-square bg-gray-200 rounded-lg overflow-hidden">
             <video ref={videoRef} className={`absolute inset-0 w-full h-full object-cover ${hasPhoto ? 'hidden' : 'block'}`}></video>
             <canvas ref={photoRef} className={`absolute inset-0 w-full h-full object-cover ${hasPhoto ? 'block' : 'hidden'}`}></canvas>
@@ -177,7 +177,7 @@ export default function PostSelfiePage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={takePhoto}
-                className="font-body bg-primary-dark text-secondary-light px-6 py-3 rounded-lg text-lg font-semibold hover:bg-accent transition-colors duration-300"
+                className="font-body bg-primary-dark text-cream px-6 py-3 rounded-lg text-lg font-semibold hover:bg-accent hover:text-primary-dark transition-colors duration-300"
               >
                 Take Photo
               </motion.button>
@@ -186,7 +186,7 @@ export default function PostSelfiePage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={clearPhoto}
-                className="font-body bg-red-500 text-secondary-light px-6 py-3 rounded-lg text-lg font-semibold hover:bg-red-600 transition-colors duration-300"
+                className="font-body bg-red-500 text-cream px-6 py-3 rounded-lg text-lg font-semibold hover:bg-red-600 transition-colors duration-300"
               >
                 Retake Photo
               </motion.button>
@@ -207,7 +207,7 @@ export default function PostSelfiePage() {
                 whileTap={{ scale: 0.95 }}
                 onClick={handlePost}
                 disabled={isUploading}
-                className="font-body bg-accent text-primary-dark px-6 py-3 rounded-lg text-lg font-semibold mt-4 w-full hover:bg-primary-dark hover:text-secondary-light transition-colors duration-300"
+                className="font-body bg-accent text-primary-dark px-6 py-3 rounded-lg text-lg font-semibold mt-4 w-full hover:bg-primary-dark hover:text-cream transition-colors duration-300"
               >
                 {isUploading ? "Posting..." : "Post Selfie"}
               </motion.button>

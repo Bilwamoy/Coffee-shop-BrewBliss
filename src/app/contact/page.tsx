@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useSearchParams } from 'next/navigation';
 import PremiumBackground from '@/components/PremiumBackground';
 import BrewingLoader from '@/components/animations/BrewingLoader';
 import BrewingSubmission from '@/components/animations/BrewingSubmission';
@@ -10,30 +11,75 @@ import LiquidPourDivider from '@/components/animations/LiquidPourDivider';
 import EnhancedText from '@/components/animations/EnhancedTextAnimations';
 
 export default function ContactPage() {
+  const searchParams = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitProgress, setSubmitProgress] = useState(0);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitMessage, setSubmitMessage] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     subject: '',
-    message: ''
+    message: '',
+    type: 'general'
   });
+
+  // Handle URL parameters
+  useEffect(() => {
+    const typeParam = searchParams.get('type');
+    if (typeParam && contactTypes.some(ct => ct.value === typeParam)) {
+      setFormData(prev => ({ ...prev, type: typeParam }));
+    }
+  }, [searchParams]);
+
+  const contactTypes = [
+    { value: 'general', label: 'General Inquiry', icon: '📧' },
+    { value: 'barista', label: 'Ask Our Baristas', icon: '👨‍🍳' },
+    { value: 'complaint', label: 'Complaint', icon: '⚠️' },
+    { value: 'compliment', label: 'Compliment', icon: '🌟' },
+    { value: 'suggestion', label: 'Suggestion', icon: '💡' },
+    { value: 'order', label: 'Order Inquiry', icon: '🛒' },
+    { value: 'catering', label: 'Catering Request', icon: '🍽️' }
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitStatus('idle');
     
-    // Simulate form processing with brewing animation
-    // In a real app, this would be your actual form submission logic
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        setSubmitMessage(result.message);
+        // Reset form after successful submission
+        setTimeout(() => {
+          setFormData({ name: '', email: '', subject: '', message: '', type: 'general' });
+        }, 2000);
+      } else {
+        setSubmitStatus('error');
+        setSubmitMessage(result.error || 'Failed to send message. Please try again.');
+      }
+    } catch (error) {
+      setSubmitStatus('error');
+      setSubmitMessage('Network error. Please check your connection and try again.');
+    }
   };
 
   const handleBrewingComplete = () => {
     setIsSubmitting(false);
-    // Reset form
-    setFormData({ name: '', email: '', subject: '', message: '' });
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value
@@ -77,9 +123,26 @@ export default function ContactPage() {
                   </h2>
                   
                   <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Contact Type Selector */}
+                    <div>
+                      <label className="block font-body text-coffee-dark mb-3">What can we help you with?</label>
+                      <select
+                        name="type"
+                        value={formData.type}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 rounded-xl bg-cream border-2 border-coffee-light/20 focus:border-accent focus:outline-none transition-colors duration-300"
+                      >
+                        {contactTypes.map((type) => (
+                          <option key={type.value} value={type.value}>
+                            {type.icon} {type.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <label className="block font-body text-coffee-dark mb-2">Name</label>
+                        <label className="block font-body text-coffee-dark mb-2">Name *</label>
                         <input
                           type="text"
                           name="name"
@@ -91,7 +154,7 @@ export default function ContactPage() {
                         />
                       </div>
                       <div>
-                        <label className="block font-body text-coffee-dark mb-2">Email</label>
+                        <label className="block font-body text-coffee-dark mb-2">Email *</label>
                         <input
                           type="email"
                           name="email"
@@ -105,7 +168,7 @@ export default function ContactPage() {
                     </div>
                     
                     <div>
-                      <label className="block font-body text-coffee-dark mb-2">Subject</label>
+                      <label className="block font-body text-coffee-dark mb-2">Subject *</label>
                       <input
                         type="text"
                         name="subject"
@@ -113,12 +176,12 @@ export default function ContactPage() {
                         onChange={handleInputChange}
                         required
                         className="w-full px-4 py-3 rounded-xl bg-cream border-2 border-coffee-light/20 focus:border-accent focus:outline-none transition-colors duration-300"
-                        placeholder="What's this about?"
+                        placeholder={formData.type === 'barista' ? 'Ask our baristas about...' : "What's this about?"}
                       />
                     </div>
                     
                     <div>
-                      <label className="block font-body text-coffee-dark mb-2">Message</label>
+                      <label className="block font-body text-coffee-dark mb-2">Message *</label>
                       <textarea
                         name="message"
                         value={formData.message}
@@ -126,18 +189,63 @@ export default function ContactPage() {
                         required
                         rows={6}
                         className="w-full px-4 py-3 rounded-xl bg-cream border-2 border-coffee-light/20 focus:border-accent focus:outline-none transition-colors duration-300 resize-none"
-                        placeholder="Tell us what's on your mind..."
+                        placeholder={
+                          formData.type === 'barista' 
+                            ? 'Ask our expert baristas about coffee brewing, bean selection, latte art, or any coffee-related questions...'
+                            : 'Tell us what\'s on your mind...'
+                        }
                       />
                     </div>
+
+                    {/* Status Messages */}
+                    {submitStatus === 'success' && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="p-4 bg-green-100 border border-green-300 rounded-xl text-green-800"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <span className="text-xl">✅</span>
+                          <span className="font-semibold">{submitMessage}</span>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {submitStatus === 'error' && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="p-4 bg-red-100 border border-red-300 rounded-xl text-red-800"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <span className="text-xl">❌</span>
+                          <span className="font-semibold">{submitMessage}</span>
+                        </div>
+                      </motion.div>
+                    )}
                     
                     <motion.button
                       type="submit"
                       disabled={isSubmitting}
-                      whileHover={{ scale: 1.02, y: -2 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="w-full bg-gradient-to-r from-coffee-warm to-coffee-light text-cream px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
+                      whileHover={{ scale: isSubmitting ? 1 : 1.02, y: isSubmitting ? 0 : -2 }}
+                      whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
+                      className={`w-full px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 ${
+                        isSubmitting 
+                          ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
+                          : 'bg-gradient-to-r from-coffee-warm to-coffee-light text-cream hover:from-coffee-dark hover:to-coffee-warm'
+                      }`}
                     >
-                      {isSubmitting ? 'Brewing your message...' : 'Send Message'}
+                      {isSubmitting ? (
+                        <div className="flex items-center justify-center space-x-2">
+                          <div className="w-5 h-5 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
+                          <span>Brewing your message...</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center space-x-2">
+                          <span>☕</span>
+                          <span>Send Message</span>
+                        </div>
+                      )}
                     </motion.button>
                   </form>
                 </div>

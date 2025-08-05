@@ -237,6 +237,166 @@ export default function Home() {
         {/* Wave Divider */}
         <CoffeeDivider variant="wave" />
 
+        {/* Contact Our Baristas Section */}
+        <section className="section-warm-beige py-24 px-4">
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center mb-16"
+            >
+              <div className="mb-6">
+                <p className="font-heading text-4xl md:text-5xl text-coffee-dark"> 
+                  Ask Our Expert Baristas
+                </p>
+              </div>
+              <p className="font-body text-xl text-coffee-dark max-w-3xl mx-auto leading-relaxed">
+                Have questions about coffee brewing, bean selection, or latte art? Our passionate baristas are here to help!
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              {/* Barista Cards */}
+              <div className="space-y-6">
+                <motion.div
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.1 }}
+                  className="glass-morphism p-6 rounded-2xl luxury-hover"
+                >
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="w-16 h-16 bg-gradient-to-br from-coffee-warm to-coffee-light rounded-full flex items-center justify-center text-2xl">
+                      👨‍🍳
+                    </div>
+                    <div>
+                      <h3 className="font-heading text-xl text-coffee-dark">Master Elena</h3>
+                      <p className="text-coffee-warm">Head Barista & Coffee Expert</p>
+                    </div>
+                  </div>
+                  <p className="text-coffee-dark text-sm leading-relaxed">
+                    "15+ years of coffee expertise. Specializing in single-origin beans, brewing techniques, and latte art mastery."
+                  </p>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="glass-morphism p-6 rounded-2xl luxury-hover"
+                >
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="w-16 h-16 bg-gradient-to-br from-coffee-warm to-coffee-light rounded-full flex items-center justify-center text-2xl">
+                      👨‍🎓
+                    </div>
+                    <div>
+                      <h3 className="font-heading text-xl text-coffee-dark">Marcus Chen</h3>
+                      <p className="text-coffee-warm">Coffee Roasting Specialist</p>
+                    </div>
+                  </div>
+                  <p className="text-coffee-dark text-sm leading-relaxed">
+                    "Passionate about the roasting process and helping customers discover their perfect coffee profile."
+                  </p>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
+                  className="glass-morphism p-6 rounded-2xl luxury-hover"
+                >
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="w-16 h-16 bg-gradient-to-br from-coffee-warm to-coffee-light rounded-full flex items-center justify-center text-2xl">
+                      👩‍🎨
+                    </div>
+                    <div>
+                      <h3 className="font-heading text-xl text-coffee-dark">Sarah Kim</h3>
+                      <p className="text-coffee-warm">Latte Art Champion</p>
+                    </div>
+                  </div>
+                  <p className="text-coffee-dark text-sm leading-relaxed">
+                    "Award-winning latte artist ready to teach you the secrets of beautiful coffee presentations."
+                  </p>
+                </motion.div>
+              </div>
+
+              {/* Contact Form */}
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="glass-morphism p-8 rounded-2xl luxury-hover"
+              >
+                <div className="text-center mb-6">
+                  <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-accent to-accent-dark rounded-full flex items-center justify-center">
+                    <span className="text-3xl">💬</span>
+                  </div>
+                  <h3 className="font-heading text-2xl text-coffee-dark mb-2">Quick Question?</h3>
+                  <p className="text-coffee-warm">Ask our baristas anything about coffee!</p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <motion.a
+                      href="/contact?type=barista"
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="bg-gradient-to-r from-coffee-warm to-coffee-light text-cream px-4 py-3 rounded-xl font-semibold text-center shadow-lg hover:shadow-xl transition-all duration-300 block"
+                    >
+                      <div className="text-lg mb-1">☕</div>
+                      <div className="text-sm">Brewing Tips</div>
+                    </motion.a>
+                    <motion.a
+                      href="/contact?type=barista"
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="bg-gradient-to-r from-coffee-warm to-coffee-light text-cream px-4 py-3 rounded-xl font-semibold text-center shadow-lg hover:shadow-xl transition-all duration-300 block"
+                    >
+                      <div className="text-lg mb-1">🫘</div>
+                      <div className="text-sm">Bean Selection</div>
+                    </motion.a>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <motion.a
+                      href="/contact?type=barista"
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="bg-gradient-to-r from-coffee-warm to-coffee-light text-cream px-4 py-3 rounded-xl font-semibold text-center shadow-lg hover:shadow-xl transition-all duration-300 block"
+                    >
+                      <div className="text-lg mb-1">🎨</div>
+                      <div className="text-sm">Latte Art</div>
+                    </motion.a>
+                    <motion.a
+                      href="/contact?type=barista"
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="bg-gradient-to-r from-coffee-warm to-coffee-light text-cream px-4 py-3 rounded-xl font-semibold text-center shadow-lg hover:shadow-xl transition-all duration-300 block"
+                    >
+                      <div className="text-lg mb-1">🔥</div>
+                      <div className="text-sm">Roasting</div>
+                    </motion.a>
+                  </div>
+                  
+                  <motion.a
+                    href="/contact?type=barista"
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full bg-gradient-to-r from-accent to-accent-dark text-coffee-dark px-6 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 block text-center"
+                  >
+                    <div className="flex items-center justify-center space-x-2">
+                      <span>👨‍🍳</span>
+                      <span>Ask Our Baristas</span>
+                    </div>
+                  </motion.a>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* Wave Divider */}
+        <CoffeeDivider variant="wave" />
+
         {/* Testimonial Section */}
         <section className="section-dark-brown py-24 px-4 text-center">
           <div className="max-w-4xl mx-auto">
