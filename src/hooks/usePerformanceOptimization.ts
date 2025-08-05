@@ -22,9 +22,14 @@ export const usePerformanceOptimization = (): PerformanceSettings => {
     shouldReduceAnimations: false,
     animationQuality: 'high',
   });
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient || typeof window === 'undefined') return;
 
     const detectPerformanceSettings = () => {
       // Detect mobile device
@@ -113,7 +118,7 @@ export const usePerformanceOptimization = (): PerformanceSettings => {
       window.removeEventListener('orientationchange', detectPerformanceSettings);
       window.removeEventListener('resize', detectPerformanceSettings);
     };
-  }, []);
+  }, [isClient]);
 
   return settings;
 };

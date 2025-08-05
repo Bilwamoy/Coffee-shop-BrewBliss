@@ -27,6 +27,7 @@ const CustomCursor: React.FC = () => {
   
   const [isVisible, setIsVisible] = useState(false);
   const [isTouch, setIsTouch] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const [cursorState, setCursorState] = useState<CursorState>({
     type: 'default',
     scale: 1,
@@ -127,8 +128,15 @@ const CustomCursor: React.FC = () => {
     }, 150);
   }, [cursorState.type, shouldAnimate]);
 
+  // Initialize client-side state
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   // Check for touch device and reduced motion preference
   useEffect(() => {
+    if (!isClient) return;
+
     const checkTouchDevice = () => {
       setIsTouch('ontouchstart' in window || navigator.maxTouchPoints > 0);
     };
@@ -149,12 +157,7 @@ const CustomCursor: React.FC = () => {
     const cleanup = checkReducedMotion();
     
     return cleanup || (() => {});
-  }, []);
-
-  // Don't render cursor on touch devices or if reduced motion is preferred
-  if (isTouch || prefersReducedMotion || !shouldAnimate) {
-    return null;
-  }
+  }, [isClient]);
 
   // Optimized element hover detection with throttling
   useEffect(() => {
@@ -350,6 +353,11 @@ const CustomCursor: React.FC = () => {
         );
     }
   };
+
+  // Don't render cursor on touch devices or if reduced motion is preferred
+  if (isTouch || prefersReducedMotion || !shouldAnimate) {
+    return null;
+  }
 
   return (
     <>
