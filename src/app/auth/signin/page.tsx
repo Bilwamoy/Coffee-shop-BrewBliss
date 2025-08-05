@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { getAuthInstance } from "@/lib/firebase/config";
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { signInWithEmail, signInWithGoogle, handleRedirectResult } from "@/lib/firebase/auth";
 import { useRouter } from "next/navigation";
 
 export default function SignInPage() {
@@ -11,52 +10,72 @@ export default function SignInPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
   const router = useRouter();
+
+  // Handle redirect result on component mount
+  useEffect(() => {
+    const checkRedirectResult = async () => {
+      const result = await handleRedirectResult();
+      if (result.success && result.user) {
+        setSuccess("Successfully signed in with Google!");
+        setTimeout(() => {
+          router.push("/");
+          router.refresh();
+        }, 1500);
+      } else if (result.error) {
+        setError(result.error);
+      }
+    };
+
+    checkRedirectResult();
+  }, [router]);
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    const authInstance = await getAuthInstance();
-    if (!authInstance) {
-      setError("Authentication service is not available.");
-      return;
-    }
-    
     setLoading(true);
     setError("");
+    setSuccess("");
 
-    try {
-      await signInWithEmailAndPassword(authInstance, email, password);
-      router.push("/");
-      router.refresh();
-    } catch (err) {
-      setError("Failed to sign in. Please check your credentials.");
-      console.error(err);
-    } finally {
-      setLoading(false);
+    const result = await signInWithEmail(email, password);
+    
+    if (result.success) {
+      setSuccess("Successfully signed in!");
+      setTimeout(() => {
+        router.push("/");
+        router.refresh();
+      }, 1500);
+    } else {
+      setError(result.error || "Failed to sign in");
     }
+    
+    setLoading(false);
   };
 
   const handleGoogleSignIn = async () => {
-    const authInstance = await getAuthInstance();
-    if (!authInstance) {
-      setError("Authentication service is not available.");
-      return;
-    }
-    
     setLoading(true);
     setError("");
+    setSuccess("");
 
-    try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(authInstance, provider);
-      router.push("/");
-      router.refresh();
-    } catch (err) {
-      setError("Failed to sign in with Google.");
-      console.error(err);
-    } finally {
-      setLoading(false);
+    const result = await signInWithGoogle();
+    
+    if (result.success) {
+      if (result.user) {
+        // Popup succeeded
+        setSuccess("Successfully signed in with Google!");
+        setTimeout(() => {
+          router.push("/");
+          router.refresh();
+        }, 1500);
+      } else {
+        // Redirect initiated
+        setSuccess("Redirecting to Google...");
+      }
+    } else {
+      setError(result.error || "Failed to sign in with Google");
     }
+    
+    setLoading(false);
   };
 
   return (
@@ -81,9 +100,23 @@ export default function SignInPage() {
           className="bg-secondary-light rounded-lg shadow-lg p-8"
         >
           {error && (
-            <div className="font-body bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="font-body bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6"
+            >
               {error}
-            </div>
+            </motion.div>
+          )}
+
+          {success && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="font-body bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6"
+            >
+              {success}
+            </motion.div>
           )}
 
           <form onSubmit={handleEmailSignIn} className="space-y-6">
